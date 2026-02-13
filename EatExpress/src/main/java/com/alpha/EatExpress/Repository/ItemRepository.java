@@ -1,7 +1,9 @@
 package com.alpha.EatExpress.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.alpha.EatExpress.Entity.Item;
+import org.springframework.stereotype.Repository;
 
-public interface ItemRepository extends JpaRepository<Item, Long> {
+import com.alpha.EatExpress.Entity.Item;
+@Repository
+public interface ItemRepository extends JpaRepository<Item, Integer> {
 }

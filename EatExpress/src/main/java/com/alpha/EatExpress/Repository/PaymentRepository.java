@@ -1,7 +1,9 @@
 package com.alpha.EatExpress.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.alpha.EatExpress.Entity.Payment;
+import org.springframework.stereotype.Repository;
 
-public interface PaymentRepository extends JpaRepository<Payment, Long> {
+import com.alpha.EatExpress.Entity.Payment;
+@Repository
+public interface PaymentRepository extends JpaRepository<Payment, Integer> {
 }
