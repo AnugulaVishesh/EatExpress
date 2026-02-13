@@ -3,7 +3,7 @@ package com.alpha.EatExpress.Controller;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import com.alpha.EatExpress.Entity.Delivery;
+import com.alpha.EatExpress.Entity.Deliverypartner;
 import com.alpha.EatExpress.Service.DeliveryService;
 
 @RestController
@@ -14,12 +14,12 @@ public class DeliveryController {
     private DeliveryService deliveryService;
 
     @PostMapping("/assign")
-    public Delivery assignDelivery(@RequestBody Delivery delivery) {
+    public Deliverypartner assignDelivery(@RequestBody Deliverypartner delivery) {
         return deliveryService.assignDelivery(delivery);
     }
 
     @GetMapping
-    public List<Delivery> getAllDeliveries() {
+    public List<Deliverypartner> getAllDeliveries() {
         return deliveryService.getAllDeliveries();
     }
 }

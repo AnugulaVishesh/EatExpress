@@ -13,7 +13,9 @@ public class Payment {
     private String type;
     private String status;
     @OneToOne
-    private FoodOrder foodorder;
+
+    @JoinColumn(name = "order_id")
+    private FoodOrder order;
 	public int getId() {
 		return id;
 	}
@@ -38,26 +40,26 @@ public class Payment {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public FoodOrder getFoodorder() {
-		return foodorder;
+	public FoodOrder getOrder() {
+		return order;
 	}
-	public void setFoodorder(FoodOrder foodorder) {
-		this.foodorder = foodorder;
+	public void setOrder(FoodOrder order) {
+		this.order = order;
 	}
-	public Payment(int id, double amount, String type, String status, FoodOrder foodorder) {
+	public Payment(int id, double amount, String type, String status, FoodOrder order) {
 		super();
 		this.id = id;
 		this.amount = amount;
 		this.type = type;
 		this.status = status;
-		this.foodorder = foodorder;
+		this.order = order;
 	}
 	public Payment() {
 		super();
-	}
-	@Override
-	public String toString() {
-		return "Payment [id=" + id + ", amount=" + amount + ", type=" + type + ", status=" + status + "]";
+		// TODO Auto-generated constructor stub
 	}
     
+  
+    
+
 }
