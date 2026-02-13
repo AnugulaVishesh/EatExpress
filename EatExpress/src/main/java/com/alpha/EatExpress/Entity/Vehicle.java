@@ -16,7 +16,7 @@ public class Vehicle {
     private String driverName;
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
-    private List<Delivery> deliveries;
+    private List<Deliverypartner> deliveries;
 
     public Vehicle() {}
 
@@ -52,11 +52,11 @@ public class Vehicle {
         this.driverName = driverName;
     }
 
-    public List<Delivery> getDeliveries() {
+    public List<Deliverypartner> getDeliveries() {
         return deliveries;
     }
 
-    public void setDeliveries(List<Delivery> deliveries) {
+    public void setDeliveries(List<Deliverypartner> deliveries) {
         this.deliveries = deliveries;
     }
 }

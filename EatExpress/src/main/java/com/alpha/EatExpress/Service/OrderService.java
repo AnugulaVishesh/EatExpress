@@ -3,7 +3,7 @@ package com.alpha.EatExpress.Service;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.alpha.EatExpress.Entity.Order;
+import com.alpha.EatExpress.Entity.FoodOrder;
 import com.alpha.EatExpress.Repository.OrderRepository;
 
 @Service
@@ -12,16 +12,16 @@ public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
 
-    public Order placeOrder(Order order) {
+    public FoodOrder placeOrder(FoodOrder order) {
         order.setStatus("PLACED");
         return orderRepository.save(order);
     }
 
-    public List<Order> getAllOrders() {
+    public List<FoodOrder> getAllOrders() {
         return orderRepository.findAll();
     }
 
-    public Order getOrderById(Long id) {
+    public FoodOrder getOrderById(Long id) {
         return orderRepository.findById(id).orElse(null);
     }
 }
