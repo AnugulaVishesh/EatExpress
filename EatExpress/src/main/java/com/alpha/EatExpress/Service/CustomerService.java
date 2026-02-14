@@ -29,7 +29,9 @@ public class CustomerService {
 	}
 
 	public void deleteCustomer(Long mob) {
-		// TODO Auto-generated method stub
+		
+	Customer c=	customerRepository.findBymobileno(mob);
+	customerRepository.delete(c);
 
 	}
 

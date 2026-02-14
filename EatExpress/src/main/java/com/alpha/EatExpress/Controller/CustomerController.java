@@ -10,7 +10,7 @@ import com.alpha.EatExpress.Entity.Customer;
 import com.alpha.EatExpress.Service.CustomerService;
 
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/customers")
 public class CustomerController {
 
 	@Autowired
