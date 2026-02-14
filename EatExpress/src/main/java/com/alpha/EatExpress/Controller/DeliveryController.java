@@ -20,14 +20,17 @@ public class DeliveryController {
         return deliveryService.registerDeliveryPartner(dto);
     }
     
+    
 
-    @PostMapping("/assign")
-    public Deliverypartner assignDelivery(@RequestBody Deliverypartner delivery) {
-        return deliveryService.assignDelivery(delivery);
-    }
-
-    @GetMapping
-    public List<Deliverypartner> getAllDeliveries() {
-        return deliveryService.getAllDeliveries();
-    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  
 }
