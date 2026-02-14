@@ -7,29 +7,28 @@ import java.util.List;
 @Table(name = "customers")
 public class Customer {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String name;
+	private String name;
 
-    @Column(name = "mobileno")
-    private String mobileno;
+	@Column(name = "mobileno", unique = true)
+	private String mobileno;
 
-    @Column(name = "mailid")
-    private String mailid;
+	@Column(name = "mailid", unique = true)
+	private String mailid;
 
-    private String gender;
+	private String gender;
 
-    private String address;
-    @OneToMany
-    private List<FoodOrder> orders;
-    @ManyToMany
-    private List<Item> cart;
+	private String address;
+	@OneToMany
+	private List<FoodOrder> orders;
+	@ManyToMany
+	private List<Item> cart;
 
-    
-    public Customer() {}
-
+	public Customer() {
+	}
 
 	public Customer(Long id, String name, String mobileno, String mailid, String gender, String address,
 			List<FoodOrder> orders, List<Item> cart) {
@@ -44,85 +43,68 @@ public class Customer {
 		this.cart = cart;
 	}
 
-
 	public Long getId() {
 		return id;
 	}
-
 
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-
 	public String getName() {
 		return name;
 	}
-
 
 	public void setName(String name) {
 		this.name = name;
 	}
 
-
 	public String getMobileno() {
 		return mobileno;
 	}
-
 
 	public void setMobileno(String mobileno) {
 		this.mobileno = mobileno;
 	}
 
-
 	public String getMailid() {
 		return mailid;
 	}
-
 
 	public void setMailid(String mailid) {
 		this.mailid = mailid;
 	}
 
-
 	public String getGender() {
 		return gender;
 	}
-
 
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
 
-
 	public String getAddress() {
 		return address;
 	}
-
 
 	public void setAddress(String address) {
 		this.address = address;
 	}
 
-
 	public List<FoodOrder> getOrders() {
 		return orders;
 	}
-
 
 	public void setOrders(List<FoodOrder> orders) {
 		this.orders = orders;
 	}
 
-
 	public List<Item> getCart() {
 		return cart;
 	}
-
 
 	public void setCart(List<Item> cart) {
 		this.cart = cart;
 	}
 
- 
 }

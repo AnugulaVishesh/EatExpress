@@ -29,6 +29,7 @@ public class RestaurantController {
 
     @GetMapping
     public List<Restaurant> getAllRestaurants() {
+    	
         return restaurantService.getAllRestaurants();
     }
 }
