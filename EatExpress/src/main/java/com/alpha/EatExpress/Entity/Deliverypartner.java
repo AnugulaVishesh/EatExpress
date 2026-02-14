@@ -13,14 +13,21 @@ public class Deliverypartner {
     private Integer  id;
     private String name;
     private long mobno;
-    private String rating;
+    private String emailid;
+    public String getEmailid() {
+		return emailid;
+	}
+	public void setEmailid(String emailid) {
+		this.emailid = emailid;
+	}
+	private String rating;
     @OneToOne
     private Address address;
     @OneToMany
     private List<FoodOrder> order;
     private String vechicalNo;
     private String status;
-	public Deliverypartner(Integer id, String name, long mobno, String rating, Address address, List<FoodOrder> order,
+	public Deliverypartner(Integer id, String name, long mobno, String emailid ,String rating, Address address, List<FoodOrder> order,
 			String vechicalNo, String status) {
 		super();
 		this.id = id;
@@ -31,6 +38,7 @@ public class Deliverypartner {
 		this.order = order;
 		this.vechicalNo = vechicalNo;
 		this.status = status;
+		this.emailid=emailid;
 	}
 	public Deliverypartner() {
 		super();
@@ -89,6 +97,7 @@ public class Deliverypartner {
 		return "Deliverypartner [id=" + id + ", name=" + name + ", mobno=" + mobno + ", rating=" + rating + ", address="
 				+ address + ", order=" + order + ", vechicalNo=" + vechicalNo + ", status=" + status + "]";
 	}
+	
     
     
     
