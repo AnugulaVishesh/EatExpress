@@ -22,7 +22,7 @@ public class Customer {
     private String gender;
 
     private String address;
-    @ManyToOne
+    @OneToMany
     private List<FoodOrder> orders;
     @ManyToMany
     private List<Item> cart;
