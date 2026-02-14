@@ -12,10 +12,9 @@ public class Payment {
     private double amount;
     private String type;
     private String status;
+    
     @OneToOne
-
-    @JoinColumn(name = "order_id")
-    private FoodOrder order;
+    private FoodOrder foodorder;
 	public int getId() {
 		return id;
 	}
@@ -40,26 +39,26 @@ public class Payment {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public FoodOrder getOrder() {
-		return order;
+	public FoodOrder getFoodorder() {
+		return foodorder;
 	}
-	public void setOrder(FoodOrder order) {
-		this.order = order;
+	public void setFoodorder(FoodOrder foodorder) {
+		this.foodorder = foodorder;
 	}
-	public Payment(int id, double amount, String type, String status, FoodOrder order) {
+	public Payment(int id, double amount, String type, String status, FoodOrder foodorder) {
 		super();
 		this.id = id;
 		this.amount = amount;
 		this.type = type;
 		this.status = status;
-		this.order = order;
+		this.foodorder = foodorder;
 	}
 	public Payment() {
 		super();
-		// TODO Auto-generated constructor stub
+	}
+	@Override
+	public String toString() {
+		return "Payment [id=" + id + ", amount=" + amount + ", type=" + type + ", status=" + status + "]";
 	}
     
-  
-    
-
 }

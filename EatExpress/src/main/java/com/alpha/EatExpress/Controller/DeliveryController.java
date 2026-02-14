@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.alpha.EatExpress.DTO.DeliveryPartnerRegDto;
 import com.alpha.EatExpress.Entity.Deliverypartner;
+import com.alpha.EatExpress.Service.CustomerService;
 import com.alpha.EatExpress.Service.DeliveryService;
 
 @RestController
@@ -20,7 +21,10 @@ public class DeliveryController {
         return deliveryService.registerDeliveryPartner(dto);
     }
     
-    
+    @DeleteMapping
+    public void deleteDelivery(@RequestParam Long mob) {
+    	deliveryService.deleteDelivery(mob);
+    }
 
     
     
