@@ -1,11 +1,15 @@
 package com.alpha.EatExpress.Service;
 
-import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alpha.EatExpress.DTO.DeliveryPartnerRegDto;
 import com.alpha.EatExpress.Entity.Deliverypartner;
+import com.alpha.EatExpress.Entity.ResponseStructure;
+import com.alpha.EatExpress.Entity.Restaurant;
+import com.alpha.EatExpress.Exception.DeliveryPartnerNotFound;
+import com.alpha.EatExpress.Exception.RestaurantNotFound;
 import com.alpha.EatExpress.Repository.DeliveryRepository;
 
 @Service
@@ -14,14 +18,7 @@ public class DeliveryService {
     @Autowired
     private DeliveryRepository deliveryRepository;
 
-   
-    // Register delivery partner
     public String registerDeliveryPartner(DeliveryPartnerRegDto dto){
-
-        // correct object usage
-        if(deliveryRepository.existsByEmailid(dto.getEmailid())){
-            return "Delivery Partner already registered with this email";
-        }
 
         Deliverypartner dp = new Deliverypartner();
         dp.setName(dto.getName());
@@ -34,33 +31,19 @@ public class DeliveryService {
         return "Delivery Partner Registered Successfully";
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    // Assign delivery
-    public Deliverypartner assignDelivery(Deliverypartner delivery) {
-        delivery.setStatus("ASSIGNED");
-        return deliveryRepository.save(delivery);
-    }
+   
 
-    // Get all delivery partners
-    public List<Deliverypartner> getAllDeliveries() {
-        return deliveryRepository.findAll();
-    }
+public ResponseStructure<Deliverypartner> findBymobno(long mob) {
+ResponseStructure<Deliverypartner> rs= new ResponseStructure<Deliverypartner>();
+		
+		Deliverypartner d=deliveryRepository.findBymobno(mob).orElseThrow(() -> new DeliveryPartnerNotFound() );
+		 rs.setStatuscode(200);
+		    rs.setMessage("Delivery partner found successfully");
+		    rs.setData(d);
+
+		    return rs;
+		
+		
+	}
 
 }

@@ -8,13 +8,13 @@ import java.util.List;
 public class Customer {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
 	private String name;
 
 	@Column(name = "mobileno", unique = true)
-	private String mobileno;
+	private long mobileno;
 
 	@Column(name = "mailid", unique = true)
 	private String mailid;
@@ -24,13 +24,13 @@ public class Customer {
 	private String address;
 	@OneToMany
 	private List<FoodOrder> orders;
-	@ManyToMany
+	@OneToMany
 	private List<Item> cart;
 
 	public Customer() {
 	}
 
-	public Customer(Long id, String name, String mobileno, String mailid, String gender, String address,
+	public Customer(Long id, String name, long mobileno, String mailid, String gender, String address,
 			List<FoodOrder> orders, List<Item> cart) {
 		super();
 		this.id = id;
@@ -59,11 +59,11 @@ public class Customer {
 		this.name = name;
 	}
 
-	public String getMobileno() {
+	public long getMobileno() {
 		return mobileno;
 	}
 
-	public void setMobileno(String mobileno) {
+	public void setMobileno(long mobileno) {
 		this.mobileno = mobileno;
 	}
 

@@ -3,7 +3,7 @@ package com.alpha.EatExpress.DTO;
 public class CustomerRegDto {
 
     private String name;
-    private String mobileno;
+    private long mobileno;
     private String mailid;
     private String gender;
 
@@ -17,11 +17,11 @@ public class CustomerRegDto {
         this.name = name;
     }
 
-    public String getMobileno() {
+    public long getMobileno() {
         return mobileno;
     }
 
-    public void setMobileno(String mobileno) {
+    public void setMobileno(long mobileno) {
         this.mobileno = mobileno;
     }
 

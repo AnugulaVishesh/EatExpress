@@ -13,7 +13,6 @@ public class Payment {
     private String type;
     private String status;
     @OneToOne
-
     @JoinColumn(name = "order_id")
     private FoodOrder order;
 	public int getId() {

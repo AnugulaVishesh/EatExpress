@@ -1,11 +1,12 @@
 package com.alpha.EatExpress.Service;
 
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alpha.EatExpress.DTO.RestaurantRegDto;
+import com.alpha.EatExpress.Entity.ResponseStructure;
 import com.alpha.EatExpress.Entity.Restaurant;
+import com.alpha.EatExpress.Exception.RestaurantNotFound;
 import com.alpha.EatExpress.Repository.RestaurantRepository;
 
 @Service
@@ -16,11 +17,6 @@ public class RestaurantService {
     
     public String registerRestaurant(RestaurantRegDto dto){
 
-        // check already exists
-        if(restaurantRepository.existsByMailid(dto.getMailid())){
-            return "Restaurant already registered with this email";
-        }
-
         Restaurant r = new Restaurant();
         r.setName(dto.getName());
         r.setMobno(dto.getMobno());
@@ -29,8 +25,6 @@ public class RestaurantService {
         r.setDescription(dto.getDescription());
         r.setPackagingfee(dto.getPackagingfee());
         r.setType(dto.getType());
-
-        // default values
         r.setStatus("OPEN");
         r.setRating("0");
 
@@ -40,27 +34,22 @@ public class RestaurantService {
     }
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+	public void deleterestaurant(Long mob) {
+		restaurantRepository.deleteByMobno(mob);
+	}
 
-    public Restaurant saveRestaurant(Restaurant restaurant) {
-        return restaurantRepository.save(restaurant);
-    }
 
-    public List<Restaurant> getAllRestaurants() {
-        return restaurantRepository.findAll();
-    }
+	public ResponseStructure<Restaurant> findrestaurant(Long mob) {
+		ResponseStructure<Restaurant> rs= new ResponseStructure<Restaurant>();
+		
+		Restaurant r=restaurantRepository.findBymobno(mob).orElseThrow(() -> new RestaurantNotFound() );
+		 rs.setStatuscode(200);
+		    rs.setMessage("Restaurant found successfully");
+		    rs.setData(r);
+
+		    return rs;
+		
+	}
     
     
     
