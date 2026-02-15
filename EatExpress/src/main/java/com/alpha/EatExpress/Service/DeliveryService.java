@@ -44,4 +44,11 @@ ResponseStructure<Deliverypartner> rs= new ResponseStructure<Deliverypartner>();
 		
 	}
 
+
+
+public void deleteDeliveryPartner(Long mob) {
+	deliveryRepository.deleteBymobno(mob);
+
+}
+
 }

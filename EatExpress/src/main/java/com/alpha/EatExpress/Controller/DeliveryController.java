@@ -26,6 +26,10 @@ public class DeliveryController {
     return	deliveryService.findBymobno(mob);
     	
     }
+    @DeleteMapping
+	public void deletedeliverpartner(@RequestParam Long mob) {
+		deliveryService.deleteDeliveryPartner(mob);
+	}
    
   
 }
