@@ -1,36 +1,36 @@
 package com.alpha.EatExpress.Controller;
 
-import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import com.alpha.EatExpress.DTO.CustomerRegDto;
 import com.alpha.EatExpress.Entity.Customer;
+import com.alpha.EatExpress.Entity.ResponseStructure;
 import com.alpha.EatExpress.Service.CustomerService;
 
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/customers")
 public class CustomerController {
 
-    @Autowired
-    private CustomerService customerService;
+	@Autowired
+	private CustomerService customerService;
 
-    @PostMapping("/register")
-    public Customer createCustomer(@RequestBody Customer customer) {
-        return customerService.saveCustomer(customer);
-    }
+	@PostMapping("/register")
+	public String registerCustomer(@RequestBody CustomerRegDto dto) {
+		return customerService.registerCustomer(dto);
+	}
 
-    @GetMapping
-    public List<Customer> getAllCustomers() {
-        return customerService.getAllCustomers();
-    }
-
-    @GetMapping("/{id}")
-    public Customer getCustomerById(@PathVariable Long id) {
-        return customerService.getCustomerById(id);
-    }
-
-    @DeleteMapping("/{id}")
-    public String deleteCustomer(@PathVariable Long id) {
-        customerService.deleteCustomer(id);
-        return "Customer deleted successfully";
-    }
+	@DeleteMapping
+	public void deleteCustomer(@RequestParam Long mob) {
+		customerService.deleteCustomer(mob);
+	}
+	
+	
+	@GetMapping("/findCustomer")
+	public ResponseStructure<Customer> findCustomer(@RequestParam long mob) {
+	return	customerService.findBymobileno(mob);
+		
+	}
+	
 }

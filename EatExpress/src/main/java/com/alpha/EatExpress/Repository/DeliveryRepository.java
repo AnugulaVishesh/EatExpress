@@ -1,7 +1,12 @@
 package com.alpha.EatExpress.Repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import com.alpha.EatExpress.Entity.Delivery;
+import java.util.Optional;
 
-public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.alpha.EatExpress.Entity.Deliverypartner;
+
+public interface DeliveryRepository extends JpaRepository<Deliverypartner, Long> {
+
+	 Optional<Deliverypartner> findBymobno(long mob);
 }
