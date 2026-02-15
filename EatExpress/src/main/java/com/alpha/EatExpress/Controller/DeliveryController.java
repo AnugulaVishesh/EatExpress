@@ -23,20 +23,9 @@ public class DeliveryController {
     
     @GetMapping("/findDeliverypartner")
     public ResponseStructure<Deliverypartner> findDeliveryPartner(@RequestParam long mob) {
-    	
     return	deliveryService.findBymobno(mob);
     	
     }
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+   
   
 }

@@ -2,14 +2,13 @@ package com.alpha.EatExpress.Service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import com.alpha.EatExpress.DTO.DeliveryPartnerRegDto;
 import com.alpha.EatExpress.Entity.Deliverypartner;
 import com.alpha.EatExpress.Entity.ResponseStructure;
-import com.alpha.EatExpress.Entity.Restaurant;
 import com.alpha.EatExpress.Exception.DeliveryPartnerNotFound;
-import com.alpha.EatExpress.Exception.RestaurantNotFound;
 import com.alpha.EatExpress.Repository.DeliveryRepository;
 
 @Service
@@ -40,7 +39,6 @@ ResponseStructure<Deliverypartner> rs= new ResponseStructure<Deliverypartner>();
 		 rs.setStatuscode(200);
 		    rs.setMessage("Delivery partner found successfully");
 		    rs.setData(d);
-
 		    return rs;
 		
 		
