@@ -8,15 +8,15 @@ import java.util.List;
 public class Restaurant {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String name;
 
-    @Column(name = "mobno")
+    @Column(name = "mobno",unique = true)
     private String mobno;
 
-    @Column(name = "mailid")
+    @Column(name = "mailid",unique = true)
     private String mailid;
 
     private String address;
@@ -143,4 +143,10 @@ public class Restaurant {
     public void setType(String type) {
         this.type = type;
     }
+
+	
+
+	
+
+	
 }

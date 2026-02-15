@@ -12,7 +12,9 @@ public class Deliverypartner {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer  id;
     private String name;
+    @Column(unique = true)
     private long mobno;
+    @Column(unique = true)
     private String emailid;
     public String getEmailid() {
 		return emailid;

@@ -1,12 +1,13 @@
 package com.alpha.EatExpress.Service;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alpha.EatExpress.DTO.CustomerRegDto;
 import com.alpha.EatExpress.Entity.Customer;
+import com.alpha.EatExpress.Entity.ResponseStructure;
+import com.alpha.EatExpress.Exception.CustomerNotFound;
 import com.alpha.EatExpress.Repository.CustomerRepository;
 
 @Service
@@ -29,8 +30,24 @@ public class CustomerService {
 	}
 
 	public void deleteCustomer(Long mob) {
-		// TODO Auto-generated method stub
+		
+		customerRepository.deleteBymobileno(mob);
+	
+	
+	}
 
+	public ResponseStructure<Customer> findBymobileno(long mob) {
+		ResponseStructure<Customer> rs=new ResponseStructure<Customer>();
+		
+		Customer c= customerRepository.findBymobileno(mob).orElseThrow(() -> new CustomerNotFound());
+		
+		rs.setStatuscode(200);
+		rs.setMessage("Customer Found Successfully");
+		rs.setData(c);
+		
+		return rs;
+		
+		
 	}
 
 }

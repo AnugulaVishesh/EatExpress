@@ -1,16 +1,16 @@
 package com.alpha.EatExpress.Controller;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.alpha.EatExpress.DTO.CustomerRegDto;
 import com.alpha.EatExpress.Entity.Customer;
+import com.alpha.EatExpress.Entity.ResponseStructure;
 import com.alpha.EatExpress.Service.CustomerService;
 
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/customers")
 public class CustomerController {
 
 	@Autowired
@@ -24,6 +24,13 @@ public class CustomerController {
 	@DeleteMapping
 	public void deleteCustomer(@RequestParam Long mob) {
 		customerService.deleteCustomer(mob);
+	}
+	
+	
+	@GetMapping("/findCustomer")
+	public ResponseStructure<Customer> findCustomer(@RequestParam long mob) {
+	return	customerService.findBymobileno(mob);
+		
 	}
 	
 }

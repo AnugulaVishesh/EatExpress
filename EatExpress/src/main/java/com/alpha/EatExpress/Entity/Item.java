@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class Item {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // BEST for PostgreSQL
+    @GeneratedValue(strategy = GenerationType.AUTO) 
     private int id;
 
     @Column(nullable = false)
@@ -27,11 +27,10 @@ public class Item {
 
     private int serves;
 
-    // Default Constructor (MANDATORY for JPA)
     public Item() {
     }
 
-    // Parameterized Constructor
+
     public Item(int id, String name, double price, int unit, String type, double rating,
                 String image, boolean available, int serves) {
         this.id = id;
@@ -45,7 +44,6 @@ public class Item {
         this.serves = serves;
     }
 
-    // Getters and Setters
     public int getId() {
         return id;
     }

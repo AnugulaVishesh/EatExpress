@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "payments")
 public class Payment {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
@@ -13,7 +12,6 @@ public class Payment {
     private String type;
     private String status;
     @OneToOne
-
     @JoinColumn(name = "order_id")
     private FoodOrder order;
 	public int getId() {
