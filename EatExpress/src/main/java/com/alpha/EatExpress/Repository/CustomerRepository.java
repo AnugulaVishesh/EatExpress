@@ -13,6 +13,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
 	Optional<Customer> findBymobileno(Long mob);
 	
+	
     @Transactional
     @Modifying
 	void deleteBymobileno(Long mob);

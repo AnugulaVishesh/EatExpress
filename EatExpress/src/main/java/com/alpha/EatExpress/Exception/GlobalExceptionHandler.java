@@ -17,35 +17,41 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(RestaurantNotFound.class)
 	public ResponseEntity<ResponseStructure<Restaurant>> handleRestaurantNotFoundException(){
 		ResponseStructure<Restaurant> rs= new ResponseStructure<Restaurant>();
-		rs.setStatuscode(400);
+		rs.setStatuscode(HttpStatus.NOT_FOUND.value());
 		rs.setMessage("Restaurant Not Found");
 		rs.setData(null);
 		return new ResponseEntity<ResponseStructure<Restaurant>>(rs,HttpStatus.NOT_FOUND);
 	}
+	
+	
 	
 	@ExceptionHandler(DeliveryPartnerNotFound.class)
 	public ResponseEntity<ResponseStructure<Deliverypartner>> handleDeliveryPartnerNotFoundException() {
 	
 		ResponseStructure<Deliverypartner> rs=new ResponseStructure<Deliverypartner>();
 		
-		rs.setStatuscode(400);
+		rs.setStatuscode(HttpStatus.NOT_FOUND.value());
 		rs.setMessage("DeliveryPartner Not Found");
 		rs.setData(null);
 		return new ResponseEntity<ResponseStructure<Deliverypartner>>(rs,HttpStatus.NOT_FOUND);
 		
 	}
 	
+	
 	@ExceptionHandler(CustomerNotFound.class)
 	public ResponseEntity<ResponseStructure<Customer>> handleCustomerNotFoundException() {
 		
 		ResponseStructure<Customer> rs=new ResponseStructure<Customer>();
-		
-		rs.setStatuscode(400);
+		rs.setStatuscode(HttpStatus.NOT_FOUND.value());
 		rs.setMessage("Customer Not Found");
 		rs.setData(null);
 		return new ResponseEntity<ResponseStructure<Customer>>(rs,HttpStatus.NOT_FOUND);
 		
 	}
+	
+	
+	
+	
 
 }
 	

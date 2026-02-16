@@ -2,7 +2,7 @@ package com.alpha.EatExpress.Service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.alpha.EatExpress.DTO.DeliveryPartnerRegDto;
@@ -36,19 +36,16 @@ public ResponseStructure<Deliverypartner> findBymobno(long mob) {
 ResponseStructure<Deliverypartner> rs= new ResponseStructure<Deliverypartner>();
 		
 		Deliverypartner d=deliveryRepository.findBymobno(mob).orElseThrow(() -> new DeliveryPartnerNotFound() );
-		 rs.setStatuscode(200);
+		 rs.setStatuscode(HttpStatus.FOUND.value());
 		    rs.setMessage("Delivery partner found successfully");
 		    rs.setData(d);
 		    return rs;
 		
-		
 	}
 
-
-
-public void deleteDeliveryPartner(Long mob) {
+   public void deleteDeliveryPartner(Long mob) {
 	deliveryRepository.deleteBymobno(mob);
 
-}
+     }
 
 }

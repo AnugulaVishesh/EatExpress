@@ -2,6 +2,7 @@ package com.alpha.EatExpress.Service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.alpha.EatExpress.DTO.CustomerRegDto;
@@ -31,17 +32,27 @@ public class CustomerService {
 
 	public void deleteCustomer(Long mob) {
 		
-		customerRepository.deleteBymobileno(mob);
-	
+	 customerRepository.deleteBymobileno(mob);
 	
 	}
+	
+	
+	
+//	public void delteCustomer(long mob){
+//	Customer c=customerRepository.findBYmobileno(mob);
+//	customerRepository.deleteBymobileno(c);
+	
+	
+	
+	
 
 	public ResponseStructure<Customer> findBymobileno(long mob) {
+		
 		ResponseStructure<Customer> rs=new ResponseStructure<Customer>();
 		
 		Customer c= customerRepository.findBymobileno(mob).orElseThrow(() -> new CustomerNotFound());
 		
-		rs.setStatuscode(200);
+		rs.setStatuscode(HttpStatus.FOUND.value());
 		rs.setMessage("Customer Found Successfully");
 		rs.setData(c);
 		

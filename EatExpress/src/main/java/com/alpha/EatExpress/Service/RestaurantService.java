@@ -1,6 +1,7 @@
 package com.alpha.EatExpress.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.alpha.EatExpress.DTO.RestaurantRegDto;
@@ -43,7 +44,7 @@ public class RestaurantService {
 		ResponseStructure<Restaurant> rs= new ResponseStructure<Restaurant>();
 		
 		Restaurant r=restaurantRepository.findBymobno(mob).orElseThrow(() -> new RestaurantNotFound() );
-		 rs.setStatuscode(200);
+		 rs.setStatuscode(HttpStatus.FOUND.value());
 		    rs.setMessage("Restaurant found successfully");
 		    rs.setData(r);
 
