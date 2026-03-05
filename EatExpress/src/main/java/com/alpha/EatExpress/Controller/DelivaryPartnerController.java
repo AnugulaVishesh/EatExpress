@@ -72,6 +72,13 @@ public class DelivaryPartnerController {
 	    return redisService.updateDPloc(dpid, latitude, longitude);
 	}
 	
+	@PostMapping("/deliveryPartner/acceptorder")
+    public String acceptorder(@RequestParam Integer orderid, @RequestParam Integer partnerid) {
+        boolean accepted = dpservice.acceptorder(orderid, partnerid);
+
+        return accepted ? "Order Assigned Successfully" : "Order Already Taken";
+    }
+	
 
 }
 

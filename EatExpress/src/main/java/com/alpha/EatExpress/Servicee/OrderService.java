@@ -1,5 +1,6 @@
 package com.alpha.EatExpress.Servicee;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.alpha.EatExpress.Exception.CustomerNotFoundException;
+import com.alpha.EatExpress.DTO.OrderNeedConsentDTO;
 import com.alpha.EatExpress.ResponceStructure.ResponceStructure;
 import com.alpha.EatExpress.entity.CartItem;
 import com.alpha.EatExpress.entity.Customer;
@@ -25,81 +26,170 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class OrderService {
 
-    @Autowired
-    private CustomerRepo customerRepo;
+	@Autowired
+	private OrderRepo orderRepo;
 
-    @Autowired
-    private OrderRepo orderRepo;
-    
-//    @Autowired
-//    private RedisService redisService;
-    @Autowired
-    private CustomerService customerService;
-    
+	@Autowired
+	private CustomerRepo customerRepo;
 
-    public ResponseEntity<ResponceStructure<Order>> placeOrder(long mobno) {
+	@Autowired
+	private CustomerService customerService;
+
+	public ResponseEntity<ResponceStructure<OrderNeedConsentDTO>> placeOrder(long mobno) {
 
 		Customer customer = customerService.findByMobno(mobno).getBody().getData();
 
-        if (customer == null) {
-            throw new CustomerNotFoundException(
-                    "Customer not found with mobile: " + mobno);
-        }
+		List<CartItem> cart = customer.getCart();
 
-        List<CartItem> cart = customer.getCart();
+		if (cart == null || cart.isEmpty()) {
+			throw new RuntimeException("Cart is empty");
+		}
 
-        if (cart == null || cart.isEmpty()) {
-            throw new RuntimeException("Cart is empty");
-        }
+		Order order = new Order();
 
-        Order order = new Order();
-        order.setCustomer(customer);
-        order.setStatus("PLACED");
-        order.setDate(LocalDate.now().toString());
+		order.setCustomer(customer);
+		order.setStatus("PENDING");
+		order.setDate(LocalDate.now().toString());
 
-        // Restaurant (because you restricted cart to single restaurant)
-        Restaurant restaurant =
-                cart.get(0).getItem().getRestaurant();
+		order.setDelivaryAddress(customer.getAddress().getStreet());
 
-        order.setRestaurant(restaurant);
-        order.setPickupaddress(
-                restaurant.getAddress().getStreet());
+		int orderPrice = 0;
 
-        order.setDelivaryAddress(
-                customer.getAddress().getStreet());
+		List<Item> items = new ArrayList<>();
+		Restaurant restaurant = null;
 
-        int totalCost = 0;
-        List<Item> orderItems = new ArrayList<>();
+		for (CartItem ci : cart) {
 
-        for (CartItem ci : cart) {
-            totalCost += ci.getItem().getPrice()
-                    * ci.getQuantity();
+			Item item = ci.getItem();
 
-            orderItems.add(ci.getItem());
-        }
+			if (restaurant == null) {
+				restaurant = item.getRestaurant();
+			}
 
-        order.setCost(totalCost);
-        order.setItem(orderItems);
+			orderPrice += item.getPrice() * ci.getQuantity();
 
-        int otp = (int)(Math.random() * 9000) + 1000;
-        order.setOtp(otp);
-        
-        
-       
+			items.add(item);
+		}
 
-        Order savedOrder = orderRepo.save(order);
+		order.setRestaurant(restaurant);
+		order.setItem(items);
 
-        // Clear cart after placing order
-        cart.clear();
-        customerRepo.save(customer);
+		order.setOrderPrice(BigDecimal.valueOf(orderPrice));
 
-        ResponceStructure<Order> rs =
-                new ResponceStructure<>();
+		double distance = 3;
 
-        rs.setStatusCode(HttpStatus.CREATED.value());
-        rs.setMessage("Order Placed Successfully");
-        rs.setData(savedOrder);
+		order.setDistance(distance);
 
-        return new ResponseEntity<>(rs, HttpStatus.CREATED);
-    }
+		int deliveryCharges = calculateDeliveryCharge(distance);
+
+		int packagingFees = 10;
+
+		int platformFees = 5;
+
+		double tax = orderPrice * 0.05;
+
+		double totalCost = orderPrice + deliveryCharges + packagingFees + platformFees + tax;
+
+		order.setDeliveryCharges(BigDecimal.valueOf(deliveryCharges));
+		order.setPackagingFees(BigDecimal.valueOf(packagingFees));
+		order.setPlatformFees(BigDecimal.valueOf(platformFees));
+		order.setTax(BigDecimal.valueOf(tax));
+		order.setCost(BigDecimal.valueOf(totalCost));
+
+		order.setOtp(generateOtp());
+
+		Order savedOrder = orderRepo.save(order);
+
+		cart.clear();
+		customerRepo.save(customer);
+
+		OrderNeedConsentDTO dto = buildDTO(savedOrder);
+
+		ResponceStructure<OrderNeedConsentDTO> rs = new ResponceStructure<>();
+
+		rs.setStatusCode(HttpStatus.CREATED.value());
+		rs.setMessage("Order sent to restaurant for consent");
+		rs.setData(dto);
+
+		return new ResponseEntity<>(rs, HttpStatus.CREATED);
+	}
+
+	public ResponseEntity<ResponceStructure<Order>> confirmOrder(int orderId) {
+
+		Order order = orderRepo.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+
+		order.setStatus("CONFIRMED");
+
+		orderRepo.save(order);
+
+		ResponceStructure<Order> response = new ResponceStructure<>();
+
+		response.setStatusCode(HttpStatus.OK.value());
+		response.setMessage("Order confirmed");
+		response.setData(order);
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+	// ================= CANCEL ORDER =================
+
+	public ResponseEntity<ResponceStructure<Order>> cancelOrder(int orderId) {
+
+		Order order = orderRepo.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+
+		order.setStatus("CANCELLED");
+
+		orderRepo.save(order);
+
+		ResponceStructure<Order> response = new ResponceStructure<>();
+
+		response.setStatusCode(HttpStatus.OK.value());
+		response.setMessage("Order cancelled");
+		response.setData(order);
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+	private OrderNeedConsentDTO buildDTO(Order order) {
+
+		OrderNeedConsentDTO dto = new OrderNeedConsentDTO();
+
+		dto.setOrderId(order.getId());
+		dto.setCustomerName(order.getCustomer().getName());
+		dto.setDeliveryAddress(order.getDelivaryAddress());
+
+		dto.setOrderPrice(order.getOrderPrice());
+		dto.setDeliveryCharges(order.getDeliveryCharges());
+		dto.setPackagingFees(order.getPackagingFees());
+		dto.setPlatformFees(order.getPlatformFees());
+		dto.setTax(order.getTax());
+		dto.setTotalCost(order.getCost());
+		dto.setDistance(order.getDistance());
+
+		List<String> items = new ArrayList<>();
+
+		for (Item item : order.getItem()) {
+			items.add(item.getName());
+		}
+
+		dto.setItems(items);
+
+		return dto;
+	}
+
+	private int calculateDeliveryCharge(double distance) {
+
+		if (distance <= 2)
+			return 20;
+		else if (distance <= 5)
+			return 40;
+		else if (distance <= 8)
+			return 60;
+		else
+			return 80;
+	}
+
+	private int generateOtp() {
+		return 1000 + (int) (Math.random() * 9000);
+	}
 }

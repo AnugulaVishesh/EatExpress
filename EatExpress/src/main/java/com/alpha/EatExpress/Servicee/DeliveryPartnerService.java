@@ -2,6 +2,7 @@ package com.alpha.EatExpress.Servicee;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +10,9 @@ import com.alpha.EatExpress.DTO.DelivaryPartnerDTO;
 import com.alpha.EatExpress.Exception.DeliveryPartnerNotFoundException;
 import com.alpha.EatExpress.ResponceStructure.ResponceStructure;
 import com.alpha.EatExpress.entity.DelivaryPartner;
+import com.alpha.EatExpress.entity.Order;
 import com.alpha.EatExpress.repository.DelivaryPartnerRepo;
+import com.alpha.EatExpress.repository.OrderRepo;
 
 @Service
 public class DeliveryPartnerService {
@@ -68,6 +71,34 @@ public class DeliveryPartnerService {
 
 	    return response;
 	}
+        
+	@Autowired
+	private OrderRepo orderRepo;
+	
+	@Autowired
+	private RedisTemplate<String, String> redisTemplate;
+	
+	public boolean acceptorder(Integer orderid, Integer partnerid) {
+        Order order = orderRepo.findById(orderid).orElseThrow(() -> new RuntimeException("Order not found"));
+        DelivaryPartner deliveryPartner = delivarypartnerrepo.findById(partnerid).orElseThrow(()
+                -> new RuntimeException("partner not found"));
+
+
+        String lockKey = "order_lock" + orderid;
+        Boolean locked = redisTemplate.opsForValue().setIfAbsent(lockKey, partnerid.toString());
+        if (Boolean.TRUE.equals(locked)) {
+            order.setDelivaryPartner(deliveryPartner);
+            orderRepo.save(order);
+            redisTemplate.delete("order:" + orderid);
+
+            return true;
+        }
+        
+        return false;
+    }
+	
+	
+	
 
 	
 	

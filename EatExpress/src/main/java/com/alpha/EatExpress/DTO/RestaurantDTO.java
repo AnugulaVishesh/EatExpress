@@ -1,90 +1,82 @@
 package com.alpha.EatExpress.DTO;
 
 public class RestaurantDTO {
-	private String name;
-	private long mobno;
-	private String mail;
-	private String description;
-	private LocationCoordinates coordinates;
-	private int packagingFee;
-	private String type;
 
-	public String getName() {
-		return name;
-	}
+    private String name;
+    private Long mobno;
+    private String mail;
+    private String description;
+    private LocationCoordinates coordinates;
+    private int packagingFee;
+    private String type;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public RestaurantDTO() {
+    }
 
-	public long getMob() {
-		return mobno;
-	}
+    public RestaurantDTO(String name, Long mobno, String mail, String description,
+                         LocationCoordinates coordinates, int packagingFee, String type) {
+        this.name = name;
+        this.mobno = mobno;
+        this.mail = mail;
+        this.description = description;
+        this.coordinates = coordinates;
+        this.packagingFee = packagingFee;
+        this.type = type;
+    }
 
-	public void setMob(long mobno) {
-		this.mobno = mobno;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getMail() {
-		return mail;
-	}
+    public Long getMobno() {
+        return mobno;
+    }
 
-	public void setMail(String mail) {
-		this.mail = mail;
-	}
+    public String getMail() {
+        return mail;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public LocationCoordinates getCoordinates() {
+        return coordinates;
+    }
 
-	public LocationCoordinates getCoordinates() {
-		return coordinates;
-	}
+    public int getPackagingFee() {
+        return packagingFee;
+    }
 
-	public void setCordinates(LocationCoordinates coordinates) {
-		this.coordinates = coordinates;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public int getPackagingFee() {
-		return packagingFee;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setPackagingFee(int packagingFee) {
-		this.packagingFee = packagingFee;
-	}
+    public void setMobno(Long mobno) {
+        this.mobno = mobno;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public RestaurantDTO(String name, long mobno, String mail, String description, LocationCoordinates coordinates,
-			int packagingFee, String type) {
-		super();
-		this.name = name;
-		this.mobno = mobno;
-		this.mail = mail;
-		this.description = description;
-		this.coordinates = coordinates;
-		this.packagingFee = packagingFee;
-		this.type = type;
-	}
+    public void setCoordinates(LocationCoordinates coordinates) {
+        this.coordinates = coordinates;
+    }
 
-	public RestaurantDTO() {
-		super();
-	}
+    public void setPackagingFee(int packagingFee) {
+        this.packagingFee = packagingFee;
+    }
 
-	@Override
-	public String toString() {
-		return "RestaurantDTO [name=" + name + ", mobno=" + mobno + ", mail=" + mail + ", description=" + description
-				+ ", coordinates=" + coordinates + ", packagingFee=" + packagingFee + ", type=" + type + "]";
-	}
-
+    public void setType(String type) {
+        this.type = type;
+    }
 }

@@ -2,168 +2,136 @@ package com.alpha.EatExpress.entity;
 
 import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.*;
 
 @Entity
 public class Item {
-	@Id
-	@GeneratedValue(strategy =GenerationType.IDENTITY)
-	private int id;
-	private String name;
-	private String description;
-	private Integer price;
-	private Integer unit;
-	private String type;
-	private String availability;
-	private Integer  rating;
-	private String image;
-	private Integer numberOfServices;
-	
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    private String name;
+    private String description;
+    private Integer price;
+    private Integer unit;
+    private String type;
+    private String availability;
+    private Integer rating;
+    private String image;
+    private Integer numberOfServices;
+
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
+    @JsonIgnore
     private Restaurant restaurant;
-    
+
     @ManyToMany
     @JoinTable(
-        name = "customer_item",
-        joinColumns = @JoinColumn(name = "item_id"),
-        inverseJoinColumns = @JoinColumn(name = "customer_id")
+            name = "customer_item",
+            joinColumns = @JoinColumn(name = "item_id"),
+            inverseJoinColumns = @JoinColumn(name = "customer_id")
     )
+    @JsonIgnore
     private List<Customer> customers;
 
-	public int getId() {
-		return id;
-	}
+    public Item() {}
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public Integer getPrice() {
-		return price;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setPrice(Integer price) {
-		this.price = price;
-	}
+    public Integer getPrice() {
+        return price;
+    }
 
-	public Integer getUnit() {
-		return unit;
-	}
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
 
-	public void setUnit(Integer unit) {
-		this.unit = unit;
-	}
+    public Integer getUnit() {
+        return unit;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setUnit(Integer unit) {
+        this.unit = unit;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public String getAvailability() {
-		return availability;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public void setAvailability(String availability) {
-		this.availability = availability;
-	}
+    public String getAvailability() {
+        return availability;
+    }
 
-	public Integer getRating() {
-		return rating;
-	}
+    public void setAvailability(String availability) {
+        this.availability = availability;
+    }
 
-	public void setRating(Integer rating) {
-		this.rating = rating;
-	}
+    public Integer getRating() {
+        return rating;
+    }
 
-	public String getImage() {
-		return image;
-	}
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
 
-	public void setImage(String image) {
-		this.image = image;
-	}
+    public String getImage() {
+        return image;
+    }
 
-	public Integer getNumberOfServices() {
-		return numberOfServices;
-	}
+    public void setImage(String image) {
+        this.image = image;
+    }
 
-	public void setNumberOfServices(Integer numberOfServices) {
-		this.numberOfServices = numberOfServices;
-	}
+    public Integer getNumberOfServices() {
+        return numberOfServices;
+    }
 
-	public Restaurant getRestaurant() {
-		return restaurant;
-	}
+    public void setNumberOfServices(Integer numberOfServices) {
+        this.numberOfServices = numberOfServices;
+    }
 
-	public void setRestaurant(Restaurant restaurant) {
-		this.restaurant = restaurant;
-	}
+    public Restaurant getRestaurant() {
+        return restaurant;
+    }
 
-	public List<Customer> getCustomers() {
-		return customers;
-	}
+    public void setRestaurant(Restaurant restaurant) {
+        this.restaurant = restaurant;
+    }
 
-	public void setCustomers(List<Customer> customers) {
-		this.customers = customers;
-	}
+    public List<Customer> getCustomers() {
+        return customers;
+    }
 
-	public Item(int id, String name, String description, Integer price, Integer unit, String type, String availability,
-			Integer rating, String image, Integer numberOfServices, Restaurant restaurant, List<Customer> customers) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.description = description;
-		this.price = price;
-		this.unit = unit;
-		this.type = type;
-		this.availability = availability;
-		this.rating = rating;
-		this.image = image;
-		this.numberOfServices = numberOfServices;
-		this.restaurant = restaurant;
-		this.customers = customers;
-	}
-
-	public Item() {
-		super();
-	}
-
-	@Override
-	public String toString() {
-		return "Item [id=" + id + ", name=" + name + ", description=" + description + ", price=" + price + ", unit="
-				+ unit + ", type=" + type + ", availability=" + availability + ", rating=" + rating + ", image=" + image
-				+ ", numberOfServices=" + numberOfServices + ", restaurant=" + restaurant + ", customers=" + customers
-				+ "]";
-	}
-
-    
-	
-
+    public void setCustomers(List<Customer> customers) {
+        this.customers = customers;
+    }
 }
