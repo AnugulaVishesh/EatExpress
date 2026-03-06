@@ -2,135 +2,98 @@ package com.alpha.EatExpress.entity;
 
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 
 @Entity
 public class DelivaryPartner {
-	@Id
-	@GeneratedValue(strategy =GenerationType.IDENTITY)
-	private int id;
-	private String name;
-	@Column(unique = true)
-	private long mob;
-	@Column(unique = true)
-	private String mail;
-	private double  rating;
-	private String status ;
-	private String vehicileno;
 
-	@OneToOne
-	 @JoinColumn(name = "address_id")
-	private  Address address ;
-	
-	@OneToMany(mappedBy = "delivaryPartner")
-	private List <Order> order;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-	public int getId() {
-		return id;
-	}
+    private String name;
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    @Column(unique = true)
+    private long mob;
 
-	public String getName() {
-		return name;
-	}
+    @Column(unique = true)
+    private String mail;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    private double rating;
 
-	public long getMob() {
-		return mob;
-	}
+    private String status;
 
-	public void setMob(long mob) {
-		this.mob = mob;
-	}
+    private String vehicileno;
 
-	public String getMail() {
-		return mail;
-	}
+    @OneToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
 
-	public void setMail(String mail) {
-		this.mail = mail;
-	}
+    @OneToMany(mappedBy = "deliveryPartner")
+    private List<Order> orders;
 
-	public double getRating() {
-		return rating;
-	}
+    public DelivaryPartner() {}
 
-	public void setRating(double rating) {
-		this.rating = rating;
-	}
+    public DelivaryPartner(int id, String name, long mob, String mail,
+                           double rating, String status, String vehicileno,
+                           Address address, List<Order> orders) {
+        this.id = id;
+        this.name = name;
+        this.mob = mob;
+        this.mail = mail;
+        this.rating = rating;
+        this.status = status;
+        this.vehicileno = vehicileno;
+        this.address = address;
+        this.orders = orders;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public int getId() { return id; }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setId(int id) { this.id = id; }
 
-	public String getVehicileno() {
-		return vehicileno;
-	}
+    public String getName() { return name; }
 
-	public void setVehicileno(String vehicileno) {
-		this.vehicileno = vehicileno;
-	}
+    public void setName(String name) { this.name = name; }
 
-	public Address getAddress() {
-		return address;
-	}
+    public long getMob() { return mob; }
 
-	public void setAddress(Address address) {
-		this.address = address;
-	}
+    public void setMob(long mob) { this.mob = mob; }
 
-	public List<Order> getOrder() {
-		return order;
-	}
+    public String getMail() { return mail; }
 
-	public void setOrder(List<Order> order) {
-		this.order = order;
-	}
+    public void setMail(String mail) { this.mail = mail; }
 
-	public DelivaryPartner(int id, String name, long mob, String mail, double rating, String status, String vehicileno,
-			Address address, List<Order> order) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.mob = mob;
-		this.mail = mail;
-		this.rating = rating;
-		this.status = status;
-		this.vehicileno = vehicileno;
-		this.address = address;
-		this.order = order;
-	}
+    public double getRating() { return rating; }
 
-	public DelivaryPartner() {
-		super();
-	}
+    public void setRating(double rating) { this.rating = rating; }
 
-	@Override
-	public String toString() {
-		return "DelivaryPartner [id=" + id + ", name=" + name + ", mob=" + mob + ", mail=" + mail + ", rating=" + rating
-				+ ", status=" + status + ", vehicileno=" + vehicileno + ", address=" + address + ", order=" + order
-				+ "]";
-	}
-	
-	
-	
-	
-	
+    public String getStatus() { return status; }
+
+    public void setStatus(String status) { this.status = status; }
+
+    public String getVehicileno() { return vehicileno; }
+
+    public void setVehicileno(String vehicileno) { this.vehicileno = vehicileno; }
+
+    public Address getAddress() { return address; }
+
+    public void setAddress(Address address) { this.address = address; }
+
+    public List<Order> getOrders() { return orders; }
+
+    public void setOrders(List<Order> orders) { this.orders = orders; }
+
+    @Override
+    public String toString() {
+        return "DelivaryPartner [id=" + id +
+                ", name=" + name +
+                ", mob=" + mob +
+                ", mail=" + mail +
+                ", rating=" + rating +
+                ", status=" + status +
+                ", vehicileno=" + vehicileno +
+                ", address=" + address +
+                ", orders=" + orders + "]";
+    }
 }

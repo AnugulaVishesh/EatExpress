@@ -51,10 +51,13 @@ public class RestaurantController {
         return restaurantservice.updateItemAvailability(restaurantmobno, itemid, availability);
     }
     
-    @PostMapping("/restaurant/acceptorder")
-    public List<String> acceptorder(@RequestParam double latitude,@RequestParam double longitude,@RequestParam Integer orderid){
-        return  restaurantservice.acceptorder(latitude,longitude,orderid);
+    @PostMapping("/acceptorder")
+    public List<String> acceptorder(
+            @RequestParam double latitude,
+            @RequestParam double longitude,
+            @RequestParam Integer orderid){
 
+        return restaurantservice.acceptorder(latitude, longitude, orderid);
     }
 
     @PatchMapping("/updaterestaurantavailability")

@@ -26,170 +26,174 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class OrderService {
 
-	@Autowired
-	private OrderRepo orderRepo;
+    @Autowired
+    private OrderRepo orderRepo;
 
-	@Autowired
-	private CustomerRepo customerRepo;
+    @Autowired
+    private CustomerRepo customerRepo;
 
-	@Autowired
-	private CustomerService customerService;
+    @Autowired
+    private CustomerService customerService;
 
-	public ResponseEntity<ResponceStructure<OrderNeedConsentDTO>> placeOrder(long mobno) {
 
-		Customer customer = customerService.findByMobno(mobno).getBody().getData();
+    public ResponseEntity<ResponceStructure<OrderNeedConsentDTO>> placeOrder(long mobno) {
 
-		List<CartItem> cart = customer.getCart();
+        Customer customer = customerService.findByMobno(mobno).getBody().getData();
 
-		if (cart == null || cart.isEmpty()) {
-			throw new RuntimeException("Cart is empty");
-		}
+        List<CartItem> cart = customer.getCart();
 
-		Order order = new Order();
+        if (cart == null || cart.isEmpty()) {
+            throw new RuntimeException("Cart is empty");
+        }
 
-		order.setCustomer(customer);
-		order.setStatus("PENDING");
-		order.setDate(LocalDate.now().toString());
+        Order order = new Order();
 
-		order.setDelivaryAddress(customer.getAddress().getStreet());
+        order.setCustomer(customer);
+        order.setStatus("PENDING");
+        order.setDate(LocalDate.now().toString());
 
-		int orderPrice = 0;
+        order.setDeliveryAddress(customer.getAddress().getStreet());
 
-		List<Item> items = new ArrayList<>();
-		Restaurant restaurant = null;
+        double orderPrice = 0;
 
-		for (CartItem ci : cart) {
+        List<Item> items = new ArrayList<>();
+        Restaurant restaurant = null;
 
-			Item item = ci.getItem();
+        for (CartItem ci : cart) {
 
-			if (restaurant == null) {
-				restaurant = item.getRestaurant();
-			}
+            Item item = ci.getItem();
 
-			orderPrice += item.getPrice() * ci.getQuantity();
+            if (restaurant == null) {
+                restaurant = item.getRestaurant();
+            }
 
-			items.add(item);
-		}
+            orderPrice += item.getPrice() * ci.getQuantity();
 
-		order.setRestaurant(restaurant);
-		order.setItem(items);
+            items.add(item);
+        }
 
-		order.setOrderPrice(BigDecimal.valueOf(orderPrice));
+        order.setRestaurant(restaurant);
+        order.setItems(items);
 
-		double distance = 3;
+        order.setOrderPrice(BigDecimal.valueOf(orderPrice));
 
-		order.setDistance(distance);
+        double distance = 3;   
+        order.setDistance(distance);
 
-		int deliveryCharges = calculateDeliveryCharge(distance);
+        int deliveryCharges = calculateDeliveryCharge(distance);
 
-		int packagingFees = 10;
+        int packagingFees = 10;
+        int platformFees = 5;
 
-		int platformFees = 5;
+        double tax = orderPrice * 0.05;
 
-		double tax = orderPrice * 0.05;
+        double totalCost = orderPrice + deliveryCharges + packagingFees + platformFees + tax;
 
-		double totalCost = orderPrice + deliveryCharges + packagingFees + platformFees + tax;
+        order.setDeliveryCharges(BigDecimal.valueOf(deliveryCharges));
+        order.setPackagingFees(BigDecimal.valueOf(packagingFees));
+        order.setPlatformFees(BigDecimal.valueOf(platformFees));
+        order.setTax(BigDecimal.valueOf(tax));
+        order.setCost(BigDecimal.valueOf(totalCost));
 
-		order.setDeliveryCharges(BigDecimal.valueOf(deliveryCharges));
-		order.setPackagingFees(BigDecimal.valueOf(packagingFees));
-		order.setPlatformFees(BigDecimal.valueOf(platformFees));
-		order.setTax(BigDecimal.valueOf(tax));
-		order.setCost(BigDecimal.valueOf(totalCost));
+        order.setOtp(generateOtp());
 
-		order.setOtp(generateOtp());
+        Order savedOrder = orderRepo.save(order);
 
-		Order savedOrder = orderRepo.save(order);
+        cart.clear();
+        customerRepo.save(customer);
 
-		cart.clear();
-		customerRepo.save(customer);
+        OrderNeedConsentDTO dto = buildDTO(savedOrder);
 
-		OrderNeedConsentDTO dto = buildDTO(savedOrder);
+        ResponceStructure<OrderNeedConsentDTO> rs = new ResponceStructure<>();
 
-		ResponceStructure<OrderNeedConsentDTO> rs = new ResponceStructure<>();
+        rs.setStatusCode(HttpStatus.CREATED.value());
+        rs.setMessage("Order sent to restaurant for consent");
+        rs.setData(dto);
 
-		rs.setStatusCode(HttpStatus.CREATED.value());
-		rs.setMessage("Order sent to restaurant for consent");
-		rs.setData(dto);
+        return new ResponseEntity<>(rs, HttpStatus.CREATED);
+    }
 
-		return new ResponseEntity<>(rs, HttpStatus.CREATED);
-	}
 
-	public ResponseEntity<ResponceStructure<Order>> confirmOrder(int orderId) {
+    public ResponseEntity<ResponceStructure<Order>> confirmOrder(int orderId) {
 
-		Order order = orderRepo.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        Order order = orderRepo.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
 
-		order.setStatus("CONFIRMED");
+        order.setStatus("CONFIRMED");
 
-		orderRepo.save(order);
+        orderRepo.save(order);
 
-		ResponceStructure<Order> response = new ResponceStructure<>();
+        ResponceStructure<Order> response = new ResponceStructure<>();
 
-		response.setStatusCode(HttpStatus.OK.value());
-		response.setMessage("Order confirmed");
-		response.setData(order);
+        response.setStatusCode(HttpStatus.OK.value());
+        response.setMessage("Order confirmed");
+        response.setData(order);
 
-		return new ResponseEntity<>(response, HttpStatus.OK);
-	}
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-	// ================= CANCEL ORDER =================
+    public ResponseEntity<ResponceStructure<Order>> cancelOrder(int orderId) {
 
-	public ResponseEntity<ResponceStructure<Order>> cancelOrder(int orderId) {
+        Order order = orderRepo.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
 
-		Order order = orderRepo.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        order.setStatus("CANCELLED");
 
-		order.setStatus("CANCELLED");
+        orderRepo.save(order);
 
-		orderRepo.save(order);
+        ResponceStructure<Order> response = new ResponceStructure<>();
 
-		ResponceStructure<Order> response = new ResponceStructure<>();
+        response.setStatusCode(HttpStatus.OK.value());
+        response.setMessage("Order cancelled");
+        response.setData(order);
 
-		response.setStatusCode(HttpStatus.OK.value());
-		response.setMessage("Order cancelled");
-		response.setData(order);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-		return new ResponseEntity<>(response, HttpStatus.OK);
-	}
 
-	private OrderNeedConsentDTO buildDTO(Order order) {
 
-		OrderNeedConsentDTO dto = new OrderNeedConsentDTO();
+    private OrderNeedConsentDTO buildDTO(Order order) {
 
-		dto.setOrderId(order.getId());
-		dto.setCustomerName(order.getCustomer().getName());
-		dto.setDeliveryAddress(order.getDelivaryAddress());
+        OrderNeedConsentDTO dto = new OrderNeedConsentDTO();
 
-		dto.setOrderPrice(order.getOrderPrice());
-		dto.setDeliveryCharges(order.getDeliveryCharges());
-		dto.setPackagingFees(order.getPackagingFees());
-		dto.setPlatformFees(order.getPlatformFees());
-		dto.setTax(order.getTax());
-		dto.setTotalCost(order.getCost());
-		dto.setDistance(order.getDistance());
+        dto.setOrderId(order.getId());
+        dto.setCustomerName(order.getCustomer().getName());
+        dto.setDeliveryAddress(order.getDeliveryAddress());
 
-		List<String> items = new ArrayList<>();
+        dto.setOrderPrice(order.getOrderPrice());
+        dto.setDeliveryCharges(order.getDeliveryCharges());
+        dto.setPackagingFees(order.getPackagingFees());
+        dto.setPlatformFees(order.getPlatformFees());
+        dto.setTax(order.getTax());
+        dto.setTotalCost(order.getCost());
+        dto.setDistance(order.getDistance());
 
-		for (Item item : order.getItem()) {
-			items.add(item.getName());
-		}
+        List<String> items = new ArrayList<>();
 
-		dto.setItems(items);
+        for (Item item : order.getItems()) {
+            items.add(item.getName());
+        }
 
-		return dto;
-	}
+        dto.setItems(items);
 
-	private int calculateDeliveryCharge(double distance) {
+        return dto;
+    }
 
-		if (distance <= 2)
-			return 20;
-		else if (distance <= 5)
-			return 40;
-		else if (distance <= 8)
-			return 60;
-		else
-			return 80;
-	}
+ 
+    private int calculateDeliveryCharge(double distance) {
 
-	private int generateOtp() {
-		return 1000 + (int) (Math.random() * 9000);
-	}
+        if (distance <= 2)
+            return 20;
+        else if (distance <= 5)
+            return 40;
+        else if (distance <= 8)
+            return 60;
+        else
+            return 80;
+    }
+
+
+    private int generateOtp() {
+        return 1000 + (int) (Math.random() * 9000);
+    }
 }

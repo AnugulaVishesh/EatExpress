@@ -1,40 +1,41 @@
 package com.alpha.EatExpress.Controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.alpha.EatExpress.DTO.OrderNeedConsentDTO;
 import com.alpha.EatExpress.ResponceStructure.ResponceStructure;
 import com.alpha.EatExpress.Servicee.OrderService;
+import com.alpha.EatExpress.DTO.OrderNeedConsentDTO;
 import com.alpha.EatExpress.entity.Order;
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/order")
 public class OrderController {
 
-    private final OrderService orderService;
+    @Autowired
+    private OrderService orderService;
 
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
-    }
-
-    @PostMapping("/place/{mobno}")
+   
+    @PostMapping("/placeorder")
     public ResponseEntity<ResponceStructure<OrderNeedConsentDTO>> placeOrder(
-            @PathVariable long mobno) {
+            @RequestParam long mobno){
 
         return orderService.placeOrder(mobno);
     }
 
-    @PostMapping("/confirm/{orderId}")
+    
+    @PostMapping("/confirm")
     public ResponseEntity<ResponceStructure<Order>> confirmOrder(
-            @PathVariable int orderId) {
+            @RequestParam int orderId){
 
         return orderService.confirmOrder(orderId);
     }
 
-    @PostMapping("/cancel/{orderId}")
+    
+    @PostMapping("/cancel")
     public ResponseEntity<ResponceStructure<Order>> cancelOrder(
-            @PathVariable int orderId) {
+            @RequestParam int orderId){
 
         return orderService.cancelOrder(orderId);
     }

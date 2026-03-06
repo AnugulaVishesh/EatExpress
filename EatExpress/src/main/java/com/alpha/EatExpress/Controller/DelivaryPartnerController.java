@@ -1,84 +1,70 @@
-
-
 package com.alpha.EatExpress.Controller;
-
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.alpha.EatExpress.DTO.DelivaryPartnerDTO;
 import com.alpha.EatExpress.ResponceStructure.ResponceStructure;
 import com.alpha.EatExpress.Servicee.DeliveryPartnerService;
 import com.alpha.EatExpress.Servicee.RedisService;
 import com.alpha.EatExpress.entity.DelivaryPartner;
+import com.alpha.EatExpress.entity.Order;
 
 @RestController
 @RequestMapping("/delivarypartner")
 public class DelivaryPartnerController {
-	
-	@Autowired
-	private DeliveryPartnerService dpservice;
-	
-	 @Autowired
-	    private RedisService redisService;
 
-	
-	@PostMapping("/register")
-	public ResponseEntity<ResponceStructure<DelivaryPartner>> savedp(
-	        @RequestBody DelivaryPartnerDTO dpdto){
+    @Autowired
+    private DeliveryPartnerService dpservice;
 
-	    ResponceStructure<DelivaryPartner> response = dpservice.saveDP(dpdto);
+    @Autowired
+    private RedisService redisService;
 
-	    return ResponseEntity.status(response.getStatusCode()).body(response);
-	}
-	
-	
-	
-	@DeleteMapping("/deletebymob")
-	public ResponseEntity<ResponceStructure<DelivaryPartner>> deleteByMob(
-	        @RequestParam long mob){
+    @PostMapping("/register")
+    public ResponseEntity<ResponceStructure<DelivaryPartner>> saveDP(
+            @RequestBody DelivaryPartnerDTO dpdto){
 
-	    ResponceStructure<DelivaryPartner> response = dpservice.deleteByMob(mob);
-	    return ResponseEntity.status(response.getStatusCode()).body(response);
-	}
-
-	
-	
-	
-	@GetMapping("/findbymob")
-	public ResponseEntity<ResponceStructure<DelivaryPartner>> findByMob(
-	        @RequestParam long mob){
-
-	    ResponceStructure<DelivaryPartner> response = dpservice.findByMob(mob);
-
-	    return ResponseEntity.status(response.getStatusCode()).body(response);
-	}
-	
-	@PostMapping("/updatelocation")
-	public String updateDplocation(
-	        @RequestParam Integer dpid,
-	        @RequestParam double latitude,
-	        @RequestParam double longitude) {
-
-	    return redisService.updateDPloc(dpid, latitude, longitude);
-	}
-	
-	@PostMapping("/deliveryPartner/acceptorder")
-    public String acceptorder(@RequestParam Integer orderid, @RequestParam Integer partnerid) {
-        boolean accepted = dpservice.acceptorder(orderid, partnerid);
-
-        return accepted ? "Order Assigned Successfully" : "Order Already Taken";
+        ResponceStructure<DelivaryPartner> response = dpservice.saveDP(dpdto);
+        return ResponseEntity.status(response.getStatusCode()).body(response);
     }
-	
 
+    @PostMapping("/updatelocation")
+    public String updateDplocation(
+            @RequestParam Integer dpid,
+            @RequestParam double latitude,
+            @RequestParam double longitude){
+
+        return redisService.updateDPloc(dpid, latitude, longitude);
+    }
+
+    @PostMapping("/accept-order")
+    public boolean acceptOrder(
+            @RequestParam Integer orderid,
+            @RequestParam Integer partnerid){
+
+        return dpservice.acceptOrder(orderid, partnerid);
+    }
+
+    @PostMapping("/pickup-order")
+    public ResponseEntity<ResponceStructure<Order>> pickupOrder(
+            @RequestParam Integer orderid){
+
+        return dpservice.pickupOrder(orderid);
+    }
+
+    @PostMapping("/start-delivery")
+    public ResponseEntity<ResponceStructure<Order>> startDelivery(
+            @RequestParam Integer orderid){
+
+        return dpservice.startDelivery(orderid);
+    }
+
+    @PostMapping("/mark-delivered")
+    public ResponseEntity<ResponceStructure<Order>> markDelivered(
+            @RequestParam Integer orderid,
+            @RequestParam String otp){
+
+        return dpservice.markDelivered(orderid, otp);
+    }
 }
-

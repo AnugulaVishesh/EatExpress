@@ -19,25 +19,9 @@ public class Order {
 
     private int otp;
 
-    @ManyToOne
-    @JoinColumn(name = "delivery_partner_id")
-    private DelivaryPartner delivaryPartner;
+    private String pickupAddress;
 
-    private String pickupaddress;
-
-    private String delivaryAddress;
-
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
-
-    @ManyToOne
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
-
-    @OneToOne
-    @JoinColumn(name = "payment_id")
-    private Payment payment;
+    private String deliveryAddress;
 
     private String estimatedTime;
 
@@ -45,11 +29,11 @@ public class Order {
 
     private int discount;
 
-    private String coupones;
+    private String coupons;
 
     private String specialRequest;
 
-    private String delivaryInstructions;
+    private String deliveryInstructions;
 
     private String date;
 
@@ -63,15 +47,31 @@ public class Order {
 
     private BigDecimal platformFees;
 
+    @ManyToOne
+    @JoinColumn(name = "delivery_partner_id")
+    private DelivaryPartner deliveryPartner;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    @ManyToOne
+    @JoinColumn(name = "restaurant_id")
+    private Restaurant restaurant;
+
+    @OneToOne
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
+
     @ManyToMany
     @JoinTable(
-        name = "order_item",
-        joinColumns = @JoinColumn(name = "order_id"),
-        inverseJoinColumns = @JoinColumn(name = "item_id")
+            name = "order_item",
+            joinColumns = @JoinColumn(name = "order_id"),
+            inverseJoinColumns = @JoinColumn(name = "item_id")
     )
-    private List<Item> item;
+    private List<Item> items;
 
-    // Getters and setters
+    public Order() {}
 
     public int getId() { return id; }
 
@@ -89,29 +89,13 @@ public class Order {
 
     public void setOtp(int otp) { this.otp = otp; }
 
-    public DelivaryPartner getDelivaryPartner() { return delivaryPartner; }
+    public String getPickupAddress() { return pickupAddress; }
 
-    public void setDelivaryPartner(DelivaryPartner delivaryPartner) { this.delivaryPartner = delivaryPartner; }
+    public void setPickupAddress(String pickupAddress) { this.pickupAddress = pickupAddress; }
 
-    public String getPickupaddress() { return pickupaddress; }
+    public String getDeliveryAddress() { return deliveryAddress; }
 
-    public void setPickupaddress(String pickupaddress) { this.pickupaddress = pickupaddress; }
-
-    public String getDelivaryAddress() { return delivaryAddress; }
-
-    public void setDelivaryAddress(String delivaryAddress) { this.delivaryAddress = delivaryAddress; }
-
-    public Customer getCustomer() { return customer; }
-
-    public void setCustomer(Customer customer) { this.customer = customer; }
-
-    public Restaurant getRestaurant() { return restaurant; }
-
-    public void setRestaurant(Restaurant restaurant) { this.restaurant = restaurant; }
-
-    public Payment getPayment() { return payment; }
-
-    public void setPayment(Payment payment) { this.payment = payment; }
+    public void setDeliveryAddress(String deliveryAddress) { this.deliveryAddress = deliveryAddress; }
 
     public String getEstimatedTime() { return estimatedTime; }
 
@@ -125,17 +109,17 @@ public class Order {
 
     public void setDiscount(int discount) { this.discount = discount; }
 
-    public String getCoupones() { return coupones; }
+    public String getCoupons() { return coupons; }
 
-    public void setCoupones(String coupones) { this.coupones = coupones; }
+    public void setCoupons(String coupons) { this.coupons = coupons; }
 
     public String getSpecialRequest() { return specialRequest; }
 
     public void setSpecialRequest(String specialRequest) { this.specialRequest = specialRequest; }
 
-    public String getDelivaryInstructions() { return delivaryInstructions; }
+    public String getDeliveryInstructions() { return deliveryInstructions; }
 
-    public void setDelivaryInstructions(String delivaryInstructions) { this.delivaryInstructions = delivaryInstructions; }
+    public void setDeliveryInstructions(String deliveryInstructions) { this.deliveryInstructions = deliveryInstructions; }
 
     public String getDate() { return date; }
 
@@ -161,401 +145,25 @@ public class Order {
 
     public void setPlatformFees(BigDecimal platformFees) { this.platformFees = platformFees; }
 
-    public List<Item> getItem() { return item; }
+    public DelivaryPartner getDeliveryPartner() { return deliveryPartner; }
 
-    public void setItem(List<Item> item) { this.item = item; }
+    public void setDeliveryPartner(DelivaryPartner deliveryPartner) {
+        this.deliveryPartner = deliveryPartner;
+    }
+
+    public Customer getCustomer() { return customer; }
+
+    public void setCustomer(Customer customer) { this.customer = customer; }
+
+    public Restaurant getRestaurant() { return restaurant; }
+
+    public void setRestaurant(Restaurant restaurant) { this.restaurant = restaurant; }
+
+    public Payment getPayment() { return payment; }
+
+    public void setPayment(Payment payment) { this.payment = payment; }
+
+    public List<Item> getItems() { return items; }
+
+    public void setItems(List<Item> items) { this.items = items; }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//package com.alpha.EatExpress.entity;
-//
-//import java.math.BigDecimal;
-//import java.util.List;
-//
-//import jakarta.persistence.Entity;
-//import jakarta.persistence.GeneratedValue;
-//import jakarta.persistence.GenerationType;
-//import jakarta.persistence.Id;
-//import jakarta.persistence.JoinColumn;
-//
-//import jakarta.persistence.JoinTable;
-//import jakarta.persistence.ManyToMany;
-//import jakarta.persistence.ManyToOne;
-//import jakarta.persistence.OneToOne;
-//import jakarta.persistence.Table;
-//
-//@Entity
-//@Table(name = "orders")
-//public class Order {
-//	@Id
-//	@GeneratedValue(strategy =GenerationType.IDENTITY)
-//	private int id;
-//	private String status;
-//	private int cost;
-//	private int otp;
-//	
-//	@ManyToOne
-//    @JoinColumn(name = "delivery_partner_id")
-//
-//	private DelivaryPartner delivaryPartner;
-//	
-//	private String pickupaddress;
-//	private String delivaryAddress;
-//
-//	
-//	@ManyToOne
-//	 @JoinColumn(name = "customer_id")
-//	private Customer customer;
-//	
-//
-//	
-//	@ManyToOne
-//	@JoinColumn(name = "restaurant_id")
-//	private Restaurant restaurant;
-//	
-//	
-//	
-//	@OneToOne
-//	 @JoinColumn(name = "payment_id")
-//	private Payment payment;
-//	private String estimatedTime;
-//	private double distance;
-//	private int discount;
-//	private String coupones;
-//	private String specialRequest;
-//	private String delivaryInstructions;
-//	private String date;
-//	
-//	private BigDecimal orderPrice;
-//	private BigDecimal deliveryCharges;
-//	private BigDecimal packagingFees;
-//	private BigDecimal tax;
-//	private BigDecimal platformFees;
-//	
-//	
-//	
-//	
-//	//orderprice,deliverycharges,packaging fees,tax,platformfees
-//
-//	public BigDecimal getOrderPrice() {
-//		return orderPrice;
-//	}
-//
-//	public void setOrderPrice(BigDecimal orderPrice) {
-//		this.orderPrice = orderPrice;
-//	}
-//
-//	public BigDecimal getDeliveryCharges() {
-//		return deliveryCharges;
-//	}
-//
-//	public void setDeliveryCharges(BigDecimal deliveryCharges) {
-//		this.deliveryCharges = deliveryCharges;
-//	}
-//
-//	public BigDecimal getPackagingFees() {
-//		return packagingFees;
-//	}
-//
-//	public void setPackagingFees(BigDecimal packagingFees) {
-//		this.packagingFees = packagingFees;
-//	}
-//
-//	public BigDecimal getTax() {
-//		return tax;
-//	}
-//
-//	public void setTax(BigDecimal tax) {
-//		this.tax = tax;
-//	}
-//
-//	public BigDecimal getPlatformFees() {
-//		return platformFees;
-//	}
-//
-//	public void setPlatformFees(BigDecimal platformFees) {
-//		this.platformFees = platformFees;
-//	}
-//
-//	public void setDistance(double distance) {
-//		this.distance = distance;
-//	}
-//
-//
-//	@ManyToMany
-//
-//    @JoinTable(
-//        name = "order_item",
-//        joinColumns = @JoinColumn(name = "order_id"),
-//        inverseJoinColumns = @JoinColumn(name = "item_id")
-//    )
-//    private List<Item> item;
-//
-//
-//
-//	public int getId() {
-//		return id;
-//	}
-//
-//	public void setId(int id) {
-//		this.id = id;
-//	}
-//	public String getStatus() {
-//		return status;
-//	}
-//	public void setStatus(String status) {
-//		this.status = status;
-//	}
-//	public int getCost() {
-//		return cost;
-//	}
-//	public void setCost(int cost) {
-//		this.cost = cost;
-//	}
-//	public int getOtp() {
-//		return otp;
-//	}
-//
-//	public void setOtp(int otp) {
-//		this.otp = otp;
-//	}
-//
-//
-//	public DelivaryPartner getDelivaryPartner() {
-//		return delivaryPartner;
-//	}
-//
-//
-//	public void setDelivaryPartner(DelivaryPartner delivaryPartner) {
-//		this.delivaryPartner = delivaryPartner;
-//	}
-//
-//
-//	public String getPickupaddress() {
-//		return pickupaddress;
-//	}
-//
-//
-//	public void setPickupaddress(String pickupaddress) {
-//		this.pickupaddress = pickupaddress;
-//	}
-//
-//
-//	public String getDelivaryAddress() {
-//		return delivaryAddress;
-//	}
-//
-//
-//	public void setDelivaryAddress(String delivaryAddress) {
-//		this.delivaryAddress = delivaryAddress;
-//	}
-//
-//
-//	public Restaurant getRestaurant() {
-//		return restaurant;
-//	}
-//
-//
-//	public void setRestaurant(Restaurant restaurant) {
-//		this.restaurant = restaurant;
-//	}
-//
-//
-//	public Customer getCustomer() {
-//		return customer;
-//	}
-//
-//
-//	public void setCustomer(Customer customer) {
-//		this.customer = customer;
-//	}
-//
-//
-//	public Payment getPayment() {
-//		return payment;
-//	}
-//
-//
-//	public void setPayment(Payment payment) {
-//		this.payment = payment;
-//	}
-//
-//
-//	public String getEstimatedTime() {
-//		return estimatedTime;
-//	}
-//
-//
-//	public void setEstimatedTime(String estimatedTime) {
-//		this.estimatedTime = estimatedTime;
-//	}
-//
-//
-//	public int getDistance() {
-//		return distance;
-//	}
-//
-//
-//	public void setDistance(int distance) {
-//		this.distance = distance;
-//	}
-//
-//
-//	public int getDiscount() {
-//		return discount;
-//	}
-//
-//
-//	public void setDiscount(int discount) {
-//		this.discount = discount;
-//	}
-//
-//
-//	public String getCoupones() {
-//		return coupones;
-//	}
-//
-//
-//	public void setCoupones(String coupones) {
-//		this.coupones = coupones;
-//	}
-//
-//
-//	public String getSpecialRequest() {
-//		return specialRequest;
-//	}
-//
-//
-//	public void setSpecialRequest(String specialRequest) {
-//		this.specialRequest = specialRequest;
-//	}
-//
-//
-//	public String getDelivaryInstructions() {
-//		return delivaryInstructions;
-//	}
-//
-//
-//	public void setDelivaryInstructions(String delivaryInstructions) {
-//		this.delivaryInstructions = delivaryInstructions;
-//	}
-//
-//
-//	public String getDate() {
-//		return date;
-//	}
-//
-//
-//	public void setDate(String date) {
-//		this.date = date;
-//	}
-//
-//
-//	public List<Item> getItem() {
-//		return item;
-//	}
-//
-//
-//	public void setItem(List<Item> item) {
-//		this.item = item;
-//	}
-//
-//
-//	@Override
-//	public String toString() {
-//		return "Order [id=" + id + ", status=" + status + ", cost=" + cost + ", otp=" + otp + ", delivaryPartner="
-//				+ delivaryPartner + ", pickupaddress=" + pickupaddress + ", delivaryAddress=" + delivaryAddress
-//				+ ", customer=" + customer + ", restaurant=" + restaurant + ", payment=" + payment + ", estimatedTime="
-//				+ estimatedTime + ", distance=" + distance + ", discount=" + discount + ", coupones=" + coupones
-//				+ ", specialRequest=" + specialRequest + ", delivaryInstructions=" + delivaryInstructions + ", date="
-//				+ date + ", orderPrice=" + orderPrice + ", deliveryCharges=" + deliveryCharges + ", packagingFees="
-//				+ packagingFees + ", tax=" + tax + ", platformFees=" + platformFees + ", item=" + item + "]";
-//	}
-//
-//	public Order() {
-//		super();
-//	}
-//
-//	public Order(int id, String status, int cost, int otp, DelivaryPartner delivaryPartner, String pickupaddress,
-//			String delivaryAddress, Customer customer, Restaurant restaurant, Payment payment, String estimatedTime,
-//			double distance, int discount, String coupones, String specialRequest, String delivaryInstructions,
-//			String date, BigDecimal orderPrice, BigDecimal deliveryCharges, BigDecimal packagingFees, BigDecimal tax,
-//			BigDecimal platformFees, List<Item> item) {
-//		super();
-//		this.id = id;
-//		this.status = status;
-//		this.cost = cost;
-//		this.otp = otp;
-//		this.delivaryPartner = delivaryPartner;
-//		this.pickupaddress = pickupaddress;
-//		this.delivaryAddress = delivaryAddress;
-//		this.customer = customer;
-//		this.restaurant = restaurant;
-//		this.payment = payment;
-//		this.estimatedTime = estimatedTime;
-//		this.distance = distance;
-//		this.discount = discount;
-//		this.coupones = coupones;
-//		this.specialRequest = specialRequest;
-//		this.delivaryInstructions = delivaryInstructions;
-//		this.date = date;
-//		this.orderPrice = orderPrice;
-//		this.deliveryCharges = deliveryCharges;
-//		this.packagingFees = packagingFees;
-//		this.tax = tax;
-//		this.platformFees = platformFees;
-//		this.item = item;
-//	}
-//
-//}
