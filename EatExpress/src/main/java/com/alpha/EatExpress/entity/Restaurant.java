@@ -38,8 +38,19 @@ public class Restaurant {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private Address address;
+    
+    @OneToMany
+    private List<Order> orders;
 
-    public Restaurant() {}
+    public List<Order> getOrders() {
+		return orders;
+	}
+
+	public void setOrders(List<Order> orders) {
+		this.orders = orders;
+	}
+
+	public Restaurant() {}
 
     public int getId() {
         return id;
