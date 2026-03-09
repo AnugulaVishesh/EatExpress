@@ -36,7 +36,6 @@ public class Restaurant {
     private List<Item> menuItems;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "address_id")
     private Address address;
     
     @OneToMany

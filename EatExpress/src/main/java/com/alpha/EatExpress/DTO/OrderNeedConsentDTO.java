@@ -4,109 +4,108 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class OrderNeedConsentDTO {
+	 private Integer orderId;
+	    private String restaurantName;
+	    private double itemCost;
+	    private double deliveryCharges;
+	    private double packagingFees;
+	    private double tax;
+	    private double platformFees;
+	    private double totalCost;
+	    private double distance;
 
-    private int orderId;
-    private String customerName;
-    private String deliveryAddress;
+	    public OrderNeedConsentDTO(double deliveryCharges, double distance,
+	                            double itemCost, Integer orderId, double packagingFees, double platformFees, String restaurantName,
+	                            double tax, double totalCost) {
+	        this.deliveryCharges = deliveryCharges;
+	        this.distance = distance;
+	        this.itemCost = itemCost;
+	        this.orderId = orderId;
+	        this.packagingFees = packagingFees;
+	        this.platformFees = platformFees;
+	        this.restaurantName = restaurantName;
+	        this.tax = tax;
+	        this.totalCost = totalCost;
+	    }
 
-    private BigDecimal orderPrice;
-    private BigDecimal deliveryCharges;
-    private BigDecimal packagingFees;
-    private BigDecimal platformFees;
-    private BigDecimal tax;
-    private BigDecimal totalCost;
+	    public OrderNeedConsentDTO() {
+	    }
 
-    private double distance;
+	    public double getDeliveryCharges() {
+	        return deliveryCharges;
+	    }
 
-    private List<String> items;
+	    public void setDeliveryCharges(double deliveryCharges) {
+	        this.deliveryCharges = deliveryCharges;
+	    }
 
-    // getters and setters
+	    public double getDistance() {
+	        return distance;
+	    }
 
-    public int getOrderId() {
-        return orderId;
-    }
+	    public void setDistance(double distance) {
+	        this.distance = distance;
+	    }
 
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
-    }
+	    public double getItemCost() {
+	        return itemCost;
+	    }
 
-    public String getCustomerName() {
-        return customerName;
-    }
+	    public void setItemCost(double itemCost) {
+	        this.itemCost = itemCost;
+	    }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
-    }
+	    public Integer getOrderId() {
+	        return orderId;
+	    }
 
-    public String getDeliveryAddress() {
-        return deliveryAddress;
-    }
+	    public void setOrderId(Integer orderId) {
+	        this.orderId = orderId;
+	    }
 
-    public void setDeliveryAddress(String deliveryAddress) {
-        this.deliveryAddress = deliveryAddress;
-    }
+	    public double getPackagingFees() {
+	        return packagingFees;
+	    }
 
-    public BigDecimal getOrderPrice() {
-        return orderPrice;
-    }
+	    public void setPackagingFees(double packagingFees) {
+	        this.packagingFees = packagingFees;
+	    }
 
-    public void setOrderPrice(BigDecimal orderPrice) {
-        this.orderPrice = orderPrice;
-    }
+	    public double getPlatformFees() {
+	        return platformFees;
+	    }
 
-    public BigDecimal getDeliveryCharges() {
-        return deliveryCharges;
-    }
+	    public void setPlatformFees(double platformFees) {
+	        this.platformFees = platformFees;
+	    }
 
-    public void setDeliveryCharges(BigDecimal deliveryCharges) {
-        this.deliveryCharges = deliveryCharges;
-    }
+	    public String getRestaurantName() {
+	        return restaurantName;
+	    }
 
-    public BigDecimal getPackagingFees() {
-        return packagingFees;
-    }
+	    public void setRestaurantName(String restaurantName) {
+	        this.restaurantName = restaurantName;
+	    }
 
-    public void setPackagingFees(BigDecimal packagingFees) {
-        this.packagingFees = packagingFees;
-    }
+	    public double getTax() {
+	        return tax;
+	    }
 
-    public BigDecimal getPlatformFees() {
-        return platformFees;
-    }
+	    public void setTax(double tax) {
+	        this.tax = tax;
+	    }
 
-    public void setPlatformFees(BigDecimal platformFees) {
-        this.platformFees = platformFees;
-    }
+	    public double getTotalCost() {
+	        return totalCost;
+	    }
 
-    public BigDecimal getTax() {
-        return tax;
-    }
+	    public void setTotalCost(double totalCost) {
+	        this.totalCost = totalCost;
+	    }
 
-    public void setTax(BigDecimal tax) {
-        this.tax = tax;
-    }
+		public void setCustomerName(String name) {
+			// TODO Auto-generated method stub
+			
+		}
 
-    public BigDecimal getTotalCost() {
-        return totalCost;
-    }
-
-    public void setTotalCost(BigDecimal totalCost) {
-        this.totalCost = totalCost;
-    }
-
-    public double getDistance() {
-        return distance;
-    }
-
-    public void setDistance(double distance) {
-        this.distance = distance;
-    }
-
-    public List<String> getItems() {
-        return items;
-    }
-
-    public void setItems(List<String> items) {
-        this.items = items;
-    }
 }

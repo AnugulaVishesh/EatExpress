@@ -1,6 +1,6 @@
 package com.alpha.EatExpress.DTO;
 
-public class CustomerDto {
+public class CustomerDTO {
 
     private String name;
     private Long mobno;
@@ -39,14 +39,14 @@ public class CustomerDto {
         this.gender = gender;
     }
 
-    public CustomerDto(String name, long mobno, String mailid, String gender) {
+    public CustomerDTO(String name, long mobno, String mailid, String gender) {
         this.name = name;
         this.mobno = mobno;
         this.mailid = mailid;
         this.gender = gender;
     }
 
-    public CustomerDto() {
+    public CustomerDTO() {
     }
 
     @Override

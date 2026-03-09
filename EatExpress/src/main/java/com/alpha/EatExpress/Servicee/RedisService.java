@@ -16,29 +16,39 @@ import org.springframework.stereotype.Service;
 @Service
 public class RedisService {
 
-	@Autowired
-	private RedisTemplate<String, String> redisTemplate;
+    @Autowired
+    private RedisTemplate<String,String> redisTemplate;
 
-	private static final String KEY = "deliverypartner:location";
+    // Update Delivery Partner Location
+	public String updateDpLoc(Integer partnerid,double latitude,double longitude){
 
-	public String updateDPloc(Integer dpid, double latitude, double longitude) {
+        redisTemplate.opsForGeo()
+                .add("deliverypartner:location",
+                        new Point(longitude,latitude),
+                        partnerid.toString());
 
-		redisTemplate.opsForGeo().add(KEY, new Point(longitude, latitude), dpid.toString());
+        return "Location Updated";
+    }
 
-		return "Location Updated Successfully";
-	}
+    //Find Nearby Delivery Partners
+    public List<String> findNearbyPartners(double latitude,double longitude,double radiusKm){
 
-	public List<String> findNearbyPartners(double latitude, double longitude, double radiusKm) {
+        Circle searchArea =
+                new Circle(new Point(longitude,latitude),
+                        new Distance(radiusKm, Metrics.KILOMETERS));
 
-		Circle searchArea = new Circle(new Point(longitude, latitude), new Distance(radiusKm, Metrics.KILOMETERS));
+        GeoResults<RedisGeoCommands.GeoLocation<String>> results =
+                redisTemplate.opsForGeo()
+                        .radius("deliverypartner:location", searchArea);
 
-		GeoResults<RedisGeoCommands.GeoLocation<String>> results = redisTemplate.opsForGeo().radius(KEY, searchArea);
+        if(results == null){
+            return List.of();
+        }
 
-		if (results == null) {
-			return List.of();
-		}
-
-		return results.getContent().stream().map(result -> result.getContent().getName()).collect(Collectors.toList());
-	}
+        return results.getContent()
+                .stream()
+                .map(result -> result.getContent().getName())
+                .collect(Collectors.toList());
+    }
 
 }

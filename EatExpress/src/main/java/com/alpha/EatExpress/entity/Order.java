@@ -1,6 +1,7 @@
 package com.alpha.EatExpress.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -35,7 +36,7 @@ public class Order {
 
     private String deliveryInstructions;
 
-    private String date;
+    private LocalDateTime date;
 
     private BigDecimal orderPrice;
 
@@ -49,7 +50,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "delivery_partner_id")
-    private DelivaryPartner deliveryPartner;
+    private DeliveryPartner deliveryPartner;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
@@ -59,7 +60,7 @@ public class Order {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "payment_id")
     private Payment payment;
 
@@ -121,9 +122,9 @@ public class Order {
 
     public void setDeliveryInstructions(String deliveryInstructions) { this.deliveryInstructions = deliveryInstructions; }
 
-    public String getDate() { return date; }
+    public LocalDateTime getDate() { return date; }
 
-    public void setDate(String date) { this.date = date; }
+    public void setDate(LocalDateTime date) { this.date = date; }
 
     public BigDecimal getOrderPrice() { return orderPrice; }
 
@@ -145,9 +146,9 @@ public class Order {
 
     public void setPlatformFees(BigDecimal platformFees) { this.platformFees = platformFees; }
 
-    public DelivaryPartner getDeliveryPartner() { return deliveryPartner; }
+    public DeliveryPartner getDeliveryPartner() { return deliveryPartner; }
 
-    public void setDeliveryPartner(DelivaryPartner deliveryPartner) {
+    public void setDeliveryPartner(DeliveryPartner deliveryPartner) {
         this.deliveryPartner = deliveryPartner;
     }
 

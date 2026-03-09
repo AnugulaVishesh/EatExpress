@@ -1,128 +1,187 @@
 package com.alpha.EatExpress.Servicee;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Point;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.alpha.EatExpress.DTO.DelivaryPartnerDTO;
+import com.alpha.EatExpress.Exception.DeliveryPartnerLocationNotFoundException;
 import com.alpha.EatExpress.Exception.DeliveryPartnerNotFoundException;
+import com.alpha.EatExpress.Exception.OrderNotFoundException;
 import com.alpha.EatExpress.ResponceStructure.ResponceStructure;
-import com.alpha.EatExpress.entity.DelivaryPartner;
+import com.alpha.EatExpress.entity.DeliveryPartner;
 import com.alpha.EatExpress.entity.Order;
-import com.alpha.EatExpress.repository.DelivaryPartnerRepo;
-import com.alpha.EatExpress.repository.OrderRepo;
+import com.alpha.EatExpress.repository.DeliveryPartnerRepository;
+import com.alpha.EatExpress.repository.OrderRepository;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class DeliveryPartnerService {
 
     @Autowired
-    private DelivaryPartnerRepo delivarypartnerrepo;
+    private DeliveryPartnerRepository deliveryPartnerRepo;
 
     @Autowired
-    private OrderRepo orderRepo;
+    private OrderRepository orderRepo;
+
+    @Autowired
+    private RedisService redisService;
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
-    public ResponceStructure<DelivaryPartner> saveDP(DelivaryPartnerDTO dpdto) {
+    public ResponseEntity<ResponceStructure<DeliveryPartner>> register(DelivaryPartnerDTO ddto) {
 
-        DelivaryPartner dp = new DelivaryPartner();
-        dp.setName(dpdto.getName());
-        dp.setMob(dpdto.getMob());
-        dp.setMail(dpdto.getMail());
-        dp.setVehicileno(dpdto.getVechileno());
+        DeliveryPartner dp = new DeliveryPartner();
 
-        DelivaryPartner saved = delivarypartnerrepo.save(dp);
+        dp.setName(ddto.getName());
+        dp.setMob(ddto.getMob());
+        dp.setMail(ddto.getMail());
+        dp.setVehicileno(ddto.getVechileno());
+        dp.setStatus("AVAILABLE");
+        dp.setRating(0);
 
-        ResponceStructure<DelivaryPartner> response = new ResponceStructure<>();
-        response.setStatusCode(HttpStatus.CREATED.value());
-        response.setMessage("Delivery Partner Registered Successfully");
-        response.setData(saved);
+        DeliveryPartner saved = deliveryPartnerRepo.save(dp);
 
-        return response;
+        ResponceStructure<DeliveryPartner> rs = new ResponceStructure<>();
+        rs.setStatusCode(HttpStatus.CREATED.value());
+        rs.setMessage("Delivery Partner Registered Successfully");
+        rs.setData(saved);
+
+        return new ResponseEntity<>(rs, HttpStatus.CREATED);
     }
 
-    public boolean acceptOrder(Integer orderid, Integer partnerid) {
+    public ResponseEntity<ResponceStructure<DeliveryPartner>> find(long mob) {
+
+        DeliveryPartner partner = deliveryPartnerRepo.findByMob(mob)
+                .orElseThrow(() -> new DeliveryPartnerNotFoundException("Delivery Partner not found"));
+
+        ResponceStructure<DeliveryPartner> rs = new ResponceStructure<>();
+        rs.setStatusCode(HttpStatus.OK.value());
+        rs.setMessage("Delivery Partner Found");
+        rs.setData(partner);
+
+        return new ResponseEntity<>(rs, HttpStatus.OK);
+    }
+
+    public ResponseEntity<ResponceStructure<String>> delete(long mob) {
+
+        DeliveryPartner partner = deliveryPartnerRepo.findByMob(mob)
+                .orElseThrow(() -> new DeliveryPartnerNotFoundException("Delivery Partner not found"));
+
+        deliveryPartnerRepo.delete(partner);
+
+        ResponceStructure<String> rs = new ResponceStructure<>();
+        rs.setStatusCode(HttpStatus.OK.value());
+        rs.setMessage("Delivery Partner Deleted");
+        rs.setData("Deleted Successfully");
+
+        return new ResponseEntity<>(rs, HttpStatus.OK);
+    }
+
+    public ResponseEntity<ResponceStructure<String>> updateDeliveryPartnerLocation(
+            Integer partnerid,
+            double latitude,
+            double longitude) {
+
+        String result = redisService.updateDpLoc(partnerid, latitude, longitude);
+
+        ResponceStructure<String> rs = new ResponceStructure<>();
+        rs.setStatusCode(HttpStatus.OK.value());
+        rs.setMessage(result);
+        rs.setData(result);
+
+        return new ResponseEntity<>(rs, HttpStatus.OK);
+    }
+
+    public ResponseEntity<ResponceStructure<String>> acceptOrder(Integer orderid, Integer partnerid) {
 
         Order order = orderRepo.findById(orderid)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
 
-        DelivaryPartner deliveryPartner = delivarypartnerrepo.findById(partnerid)
-                .orElseThrow(() -> new RuntimeException("Delivery Partner not found"));
+        DeliveryPartner partner = deliveryPartnerRepo.findById(partnerid)
+                .orElseThrow(() -> new DeliveryPartnerNotFoundException("Partner not found"));
 
-        String lockKey = "order_lock_" + orderid;
+        String lockKey = "order_lock:" + orderid;
 
-        Boolean locked = redisTemplate.opsForValue()
-                .setIfAbsent(lockKey, partnerid.toString());
+        Boolean locked = redisTemplate.opsForValue().setIfAbsent(lockKey, partnerid.toString());
+
+        String message;
 
         if (Boolean.TRUE.equals(locked)) {
 
-            order.setDeliveryPartner(deliveryPartner);
+            order.setDeliveryPartner(partner);
+
+            if (partner.getOrders() == null) {
+                partner.setOrders(new ArrayList<>());
+            }
+
+            partner.getOrders().add(order);
+
             order.setStatus("ASSIGNED");
 
             orderRepo.save(order);
 
             redisTemplate.delete("order:" + orderid);
 
-            return true;
+            message = "Order assigned successfully";
+        } else {
+            message = "Order already taken by another partner";
         }
 
-        return false;
+        ResponceStructure<String> rs = new ResponceStructure<>();
+        rs.setStatusCode(HttpStatus.OK.value());
+        rs.setMessage("Order Response");
+        rs.setData(message);
+
+        return new ResponseEntity<>(rs, HttpStatus.OK);
     }
 
-    public ResponseEntity<ResponceStructure<Order>> pickupOrder(Integer orderid) {
+    public void getDirectionToRestaurant(Integer partnerId,
+                                         double restlat,
+                                         double restlong,
+                                         HttpServletResponse resp) throws IOException {
 
-        Order order = orderRepo.findById(orderid)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+        String key = "deliverypartner:location";
 
-        order.setStatus("PICKED");
-        orderRepo.save(order);
+        List<Point> points = redisTemplate.opsForGeo().position(key, partnerId.toString());
 
-        ResponceStructure<Order> response = new ResponceStructure<>();
-        response.setStatusCode(HttpStatus.OK.value());
-        response.setMessage("Order Picked Successfully");
-        response.setData(order);
-
-        return ResponseEntity.ok(response);
-    }
-
-    public ResponseEntity<ResponceStructure<Order>> startDelivery(Integer orderid) {
-
-        Order order = orderRepo.findById(orderid)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
-
-        order.setStatus("ON_THE_WAY");
-        orderRepo.save(order);
-
-        ResponceStructure<Order> response = new ResponceStructure<>();
-        response.setStatusCode(HttpStatus.OK.value());
-        response.setMessage("Delivery Started");
-        response.setData(order);
-
-        return ResponseEntity.ok(response);
-    }
-
-    public ResponseEntity<ResponceStructure<Order>> markDelivered(Integer orderid, String otp) {
-
-        Order order = orderRepo.findById(orderid)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
-
-        int enteredOtp = Integer.parseInt(otp);
-
-        if (order.getOtp() != enteredOtp) {
-            throw new RuntimeException("Invalid OTP");
+        if (points == null || points.isEmpty()) {
+            throw new DeliveryPartnerLocationNotFoundException("Delivery Partner Location not found");
         }
 
-        order.setStatus("DELIVERED");
-        orderRepo.save(order);
+        Point p = points.get(0);
 
-        ResponceStructure<Order> response = new ResponceStructure<>();
-        response.setStatusCode(HttpStatus.OK.value());
-        response.setMessage("Order Delivered Successfully");
-        response.setData(order);
+        double dplon = p.getX();
+        double dplat = p.getY();
 
-        return ResponseEntity.ok(response);
+        String url = "https://www.google.com/maps/dir/?api=1&origin="
+                + dplat + "," + dplon
+                + "&destination=" + restlat + "," + restlong
+                + "&travelmode=driving";
+
+        resp.sendRedirect(url);
+    }
+
+    public void getDirectionToCustomer(double restlat,
+                                       double restlon,
+                                       double custlat,
+                                       double custlong,
+                                       HttpServletResponse response) throws IOException {
+
+        String url = "https://www.google.com/maps/dir/?api=1&origin="
+                + restlat + "," + restlon
+                + "&destination=" + custlat + "," + custlong
+                + "&travelmode=driving";
+
+        response.sendRedirect(url);
     }
 }

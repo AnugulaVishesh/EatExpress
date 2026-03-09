@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import com.alpha.EatExpress.entity.Address;
 @Repository
-public interface AddressRepo extends JpaRepository<Address,Integer>{
+public interface AddressRepository extends JpaRepository<Address,Integer>{
 
 }

@@ -10,7 +10,7 @@ import com.alpha.EatExpress.entity.Restaurant;
 
 
 @Repository
-public interface RestaurantRepo extends JpaRepository<Restaurant, Integer>{
+public interface RestaurantRepository extends JpaRepository<Restaurant, Integer>{
 	
 	Optional<Restaurant> findByMobno(long mobno);
 	

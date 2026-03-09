@@ -1,6 +1,5 @@
 package com.alpha.EatExpress.Servicee;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,187 +7,250 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-
-import com.alpha.EatExpress.DTO.CustomerDto;
+import com.alpha.EatExpress.DTO.CartWithCouponsDTO;
+import com.alpha.EatExpress.DTO.CustomerDTO;
+import com.alpha.EatExpress.DTO.OrderNeedConsentDTO;
+import com.alpha.EatExpress.Exception.CartEmptyException;
 import com.alpha.EatExpress.Exception.CustomerNotFoundException;
 import com.alpha.EatExpress.Exception.ItemNotFoundException;
-import com.alpha.EatExpress.Exception.RestaurantNotFoundException;
+import com.alpha.EatExpress.Exception.OrderNotFoundException;
 import com.alpha.EatExpress.ResponceStructure.ResponceStructure;
-import com.alpha.EatExpress.entity.Address;
 import com.alpha.EatExpress.entity.CartItem;
 import com.alpha.EatExpress.entity.Customer;
 import com.alpha.EatExpress.entity.Item;
 import com.alpha.EatExpress.entity.Order;
 import com.alpha.EatExpress.entity.Restaurant;
-import com.alpha.EatExpress.repository.CustomerRepo;
-import com.alpha.EatExpress.repository.ItemRepo;
-import com.alpha.EatExpress.repository.OrderRepo;
-import com.alpha.EatExpress.repository.RestaurantRepo;
-
-import jakarta.transaction.Transactional;
+import com.alpha.EatExpress.repository.CustomerRepository;
+import com.alpha.EatExpress.repository.ItemRepository;
+import com.alpha.EatExpress.repository.OrderRepository;
+import com.alpha.EatExpress.repository.RestaurantRepository;
 
 @Service
-@Transactional
 public class CustomerService {
 
     @Autowired
-    private CustomerRepo customerrepo;
+    private CustomerRepository customerRepository;
 
     @Autowired
-    private RestaurantRepo restaurantrepo;
+    private OrderRepository orderRepository;
 
     @Autowired
-    private ItemRepo itemrepo;
+    private ItemRepository itemRepository;
 
     @Autowired
-    private OrderRepo orderRepo;
+    private RestaurantRepository restaurantRepository;
 
-    public ResponseEntity<ResponceStructure<Customer>> saveCustomer(CustomerDto cdto) {
+    public ResponseEntity<ResponceStructure<Customer>> register(CustomerDTO dto){
 
         Customer customer = new Customer();
-        customer.setName(cdto.getName());
-        customer.setMobno(cdto.getMobno());
-        customer.setMailid(cdto.getMailid());
-        customer.setGender(cdto.getGender());
 
-        Customer saved = customerrepo.save(customer);
+        customer.setName(dto.getName());
+        customer.setMobno(dto.getMobno());
+        customer.setMailid(dto.getMailid());
+        customer.setGender(dto.getGender());
 
-        ResponceStructure<Customer> response = new ResponceStructure<>();
-        response.setStatusCode(HttpStatus.CREATED.value());
-        response.setMessage("Customer Saved Successfully");
-        response.setData(saved);
-
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
-    public ResponseEntity<ResponceStructure<Customer>> findByMobno(long mobno) {
-
-        Customer customer = customerrepo.findByMobno(mobno)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile number: " + mobno));
-
-        ResponceStructure<Customer> response = new ResponceStructure<>();
-        response.setStatusCode(HttpStatus.OK.value());
-        response.setMessage("Customer Found Successfully");
-        response.setData(customer);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    public ResponseEntity<ResponceStructure<String>> deleteByMobno(long mobno) {
-
-        Customer customer = findByMobno(mobno).getBody().getData();
-
-        customerrepo.deleteByMobno(mobno);
-
-        ResponceStructure<String> response = new ResponceStructure<>();
-        response.setStatusCode(HttpStatus.OK.value());
-        response.setMessage("Customer Deleted Successfully");
-        response.setData("Deleted customer with mobile number: " + mobno);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-    
-    public ResponseEntity<ResponceStructure<Customer>> addAddress(long mobno, Address address) {
-
-        Customer customer = customerrepo.findByMobno(mobno)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
-
-        customer.setAddress(address);
-
-        customerrepo.save(customer);
+        Customer savedCustomer = customerRepository.save(customer);
 
         ResponceStructure<Customer> rs = new ResponceStructure<>();
-        rs.setStatusCode(HttpStatus.OK.value());
-        rs.setMessage("Address added successfully");
-        rs.setData(customer);
 
-        return new ResponseEntity<>(rs, HttpStatus.OK);
+        rs.setStatusCode(HttpStatus.CREATED.value());
+        rs.setMessage("Customer Registered Successfully");
+        rs.setData(savedCustomer);
+
+        return new ResponseEntity<>(rs,HttpStatus.CREATED);
     }
 
-    public ResponseEntity<ResponceStructure<List<Restaurant>>> searchItemOrRestaurant(long mobno, String searchkey) {
+    public ResponseEntity<ResponceStructure<Customer>> findCustomer(long mobno){
 
-        Customer customer = findByMobno(mobno).getBody().getData();
+        Customer customer = customerRepository.findByMobno(mobno)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
 
-        if (customer.getAddress() == null) {
-            throw new RuntimeException("Customer address not found. Please add address first.");
+        ResponceStructure<Customer> rs = new ResponceStructure<>();
+
+        rs.setStatusCode(HttpStatus.OK.value());
+        rs.setMessage("Customer Found");
+        rs.setData(customer);
+
+        return new ResponseEntity<>(rs,HttpStatus.OK);
+    }
+
+    public ResponseEntity<ResponceStructure<String>> deleteCustomer(long mobno){
+
+        Customer customer = customerRepository.findByMobno(mobno)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+
+        customerRepository.delete(customer);
+
+        ResponceStructure<String> rs = new ResponceStructure<>();
+
+        rs.setStatusCode(HttpStatus.OK.value());
+        rs.setMessage("Customer Deleted Successfully");
+        rs.setData("Deleted");
+
+        return new ResponseEntity<>(rs,HttpStatus.OK);
+    }
+
+    public ResponseEntity<ResponceStructure<String>> addToCart(long mobno,int itemid,int quantity){
+
+        Customer customer = customerRepository.findByMobno(mobno)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+
+        Item item = itemRepository.findById(itemid)
+                .orElseThrow(() -> new ItemNotFoundException("Item not found"));
+
+        CartItem cartItem = new CartItem();
+
+        cartItem.setItem(item);
+        cartItem.setQuantity(quantity);
+
+        customer.getCart().add(cartItem);
+
+        customerRepository.save(customer);
+
+        ResponceStructure<String> rs = new ResponceStructure<>();
+
+        rs.setStatusCode(HttpStatus.OK.value());
+        rs.setMessage("Item Added To Cart");
+        rs.setData("Success");
+
+        return new ResponseEntity<>(rs,HttpStatus.OK);
+    }
+
+    public ResponseEntity<ResponceStructure<CartWithCouponsDTO>> getCart(long mobno){
+
+        Customer customer = customerRepository.findByMobno(mobno)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+
+        CartWithCouponsDTO dto = new CartWithCouponsDTO();
+
+        dto.setCartItems(customer.getCart());
+
+        double total = 0;
+
+        for(CartItem c : customer.getCart()){
+            total += c.getItem().getPrice() * c.getQuantity();
         }
 
-        String city = customer.getAddress().getCity();
+        dto.setCartTotal(total);
 
-        List<Restaurant> restaurantsInCity = restaurantrepo.findByAddress_City(city);
+        ResponceStructure<CartWithCouponsDTO> rs = new ResponceStructure<>();
 
-        List<Restaurant> filteredRestaurants = restaurantsInCity.stream()
-                .filter(r -> r.getName().toLowerCase().contains(searchkey.toLowerCase())
-                        || r.getMenuItems().stream()
-                        .anyMatch(i -> i.getName().toLowerCase().contains(searchkey.toLowerCase())))
+        rs.setStatusCode(HttpStatus.OK.value());
+        rs.setMessage("Cart fetched successfully");
+        rs.setData(dto);
+
+        return new ResponseEntity<>(rs,HttpStatus.OK);
+    }
+
+    public ResponseEntity<ResponceStructure<OrderNeedConsentDTO>> placeOrder(
+            long mobno,String paymentType,String addressType,String specialRequest,Integer couponId){
+
+        Customer customer = customerRepository.findByMobno(mobno)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+
+        if(customer.getCart()==null || customer.getCart().isEmpty()){
+            throw new CartEmptyException("Cart is empty");
+        }
+
+        Order order = new Order();
+
+        order.setCustomer(customer);
+        order.setStatus("WAITING_FOR_CONSENT");
+
+        Order savedOrder = orderRepository.save(order);
+
+        OrderNeedConsentDTO dto = new OrderNeedConsentDTO();
+
+        dto.setOrderId(savedOrder.getId());
+        dto.setCustomerName(customer.getName());
+
+        ResponceStructure<OrderNeedConsentDTO> rs = new ResponceStructure<>();
+
+        rs.setStatusCode(HttpStatus.CREATED.value());
+        rs.setMessage("Order created - waiting for customer consent");
+        rs.setData(dto);
+
+        return new ResponseEntity<>(rs,HttpStatus.CREATED);
+    }
+
+    public ResponseEntity<ResponceStructure<String>> confirmPlacingOrder(int orderid){
+
+        Order order = orderRepository.findById(orderid)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+
+        order.setStatus("PLACED");
+
+        orderRepository.save(order);
+
+        ResponceStructure<String> rs = new ResponceStructure<>();
+
+        rs.setStatusCode(HttpStatus.OK.value());
+        rs.setMessage("Order Confirmed Successfully");
+        rs.setData("Order placed successfully");
+
+        return new ResponseEntity<>(rs,HttpStatus.OK);
+    }
+
+    public ResponseEntity<ResponceStructure<String>> denyPlacingOrder(int orderid){
+
+        Order order = orderRepository.findById(orderid)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+
+        order.setStatus("CANCELLED");
+
+        orderRepository.save(order);
+
+        ResponceStructure<String> rs = new ResponceStructure<>();
+
+        rs.setStatusCode(HttpStatus.OK.value());
+        rs.setMessage("Order Cancelled");
+        rs.setData("Cancelled");
+
+        return new ResponseEntity<>(rs,HttpStatus.OK);
+    }
+
+    public ResponseEntity<ResponceStructure<List<Restaurant>>> searchItemOrRestaurant(long mobno,String searchkey){
+
+        List<Restaurant> restaurants = restaurantRepository.findAll();
+
+        List<Restaurant> result = restaurants.stream()
+                .filter(r -> r.getName().toLowerCase().contains(searchkey.toLowerCase()))
                 .toList();
 
         ResponceStructure<List<Restaurant>> rs = new ResponceStructure<>();
-        rs.setStatusCode(HttpStatus.OK.value());
-        rs.setMessage("Search completed successfully");
-        rs.setData(filteredRestaurants);
 
-        return new ResponseEntity<>(rs, HttpStatus.OK);
+        rs.setStatusCode(HttpStatus.OK.value());
+        rs.setMessage("Search Results");
+        rs.setData(result);
+
+        return new ResponseEntity<>(rs,HttpStatus.OK);
     }
 
-    public ResponseEntity<ResponceStructure<String>> addToCart(long mobno, int itemId, int quantity) {
+    public ResponseEntity<ResponceStructure<String>> removeItemFromCart(long customermobno, long restmob, int itemid) {
 
-        Customer customer = findByMobno(mobno).getBody().getData();
+        Customer customer = customerRepository.findByMobno(customermobno)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
 
-        Item item = itemrepo.findById(itemId)
-                .orElseThrow(() -> new ItemNotFoundException("Item not found with id: " + itemId));
-
-        if (customer.getCart() == null || customer.getCart().size() == 0) {
-
-            if (customer.getCart() == null) {
-                customer.setCart(new ArrayList<>());
-            }
-
-            CartItem cartItem = new CartItem();
-            cartItem.setItem(item);
-            cartItem.setQuantity(quantity);
-            customer.getCart().add(cartItem);
-
-        } else {
-
-            if (item.getRestaurant().getId() == customer.getCart().get(0).getItem().getRestaurant().getId()) {
-
-                CartItem cartItem = new CartItem();
-                cartItem.setItem(item);
-                cartItem.setQuantity(quantity);
-                customer.getCart().add(cartItem);
-
-            } else {
-
-                restaurantrepo.findById(item.getRestaurant().getId())
-                        .filter(r -> r.getId() == customer.getCart().get(0).getItem().getRestaurant().getId())
-                        .orElseThrow(() -> new RestaurantNotFoundException(
-                                "You cannot add items from different restaurants to the same cart"));
-
-                CartItem cartItem = new CartItem();
-                cartItem.setItem(item);
-                cartItem.setQuantity(quantity);
-                customer.getCart().add(cartItem);
-            }
+        if(customer.getCart() == null || customer.getCart().isEmpty()){
+            throw new CartEmptyException("Cart is empty");
         }
 
-        customerrepo.save(customer);
+        CartItem cartItem = customer.getCart().stream()
+                .filter(ci -> ci.getItem().getId() == itemid
+                        && ci.getItem().getRestaurant().getMobno() == restmob)
+                .findFirst()
+                .orElseThrow(() -> new ItemNotFoundException("Item not found in cart"));
+
+        customer.getCart().remove(cartItem);
+
+        customerRepository.save(customer);
 
         ResponceStructure<String> rs = new ResponceStructure<>();
+
         rs.setStatusCode(HttpStatus.OK.value());
-        rs.setMessage("Item Added To Cart");
-        rs.setData("Added successfully");
+        rs.setMessage("Item removed from cart successfully");
+        rs.setData("Removed Item ID: " + itemid);
 
         return new ResponseEntity<>(rs, HttpStatus.OK);
-    }
-
-    public void acceptPlacingOrderGiveConcent(int orderid) {
-
-        Order ordertobeconfirmed = orderRepo.findById(orderid)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
-
-        ordertobeconfirmed.setStatus("CONFIRMED");
-
-        orderRepo.save(ordertobeconfirmed);
     }
 }

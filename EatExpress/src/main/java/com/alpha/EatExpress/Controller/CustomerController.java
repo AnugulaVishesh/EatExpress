@@ -1,81 +1,89 @@
 package com.alpha.EatExpress.Controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.alpha.EatExpress.entity.Address;
-import com.alpha.EatExpress.DTO.CustomerDto;
+import com.alpha.EatExpress.DTO.CartWithCouponsDTO;
+import com.alpha.EatExpress.DTO.CustomerDTO;
 import com.alpha.EatExpress.DTO.OrderNeedConsentDTO;
+import com.alpha.EatExpress.entity.Customer;
+import com.alpha.EatExpress.entity.Restaurant;
 import com.alpha.EatExpress.ResponceStructure.ResponceStructure;
 import com.alpha.EatExpress.Servicee.CustomerService;
-import com.alpha.EatExpress.Servicee.OrderService;
-import com.alpha.EatExpress.entity.Customer;
-import com.alpha.EatExpress.entity.Order;
-import com.alpha.EatExpress.entity.Restaurant;
 
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
 
-	@Autowired
-	private CustomerService customerservice;
+    @Autowired
+    private CustomerService customerService;
 
-	@Autowired
-	private OrderService orderService;
+    @PostMapping("/register")
+    public ResponseEntity<ResponceStructure<Customer>> register(@RequestBody CustomerDTO cdto){
+        return customerService.register(cdto);
+    }
 
-	@PostMapping("/register")
-	public ResponseEntity<ResponceStructure<Customer>> saveCustomer(@RequestBody CustomerDto cdto) {
-		return customerservice.saveCustomer(cdto);
-	}
+    @GetMapping("/find")
+    public ResponseEntity<ResponceStructure<Customer>> find(@RequestParam long mobno){
+        return customerService.findCustomer(mobno);
+    }
 
-	@GetMapping("/find/{mobno}")
-	public ResponseEntity<ResponceStructure<Customer>> find(@PathVariable long mobno) {
-		return customerservice.findByMobno(mobno);
-	}
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponceStructure<String>> delete(@RequestParam long mobno){
+        return customerService.deleteCustomer(mobno);
+    }
 
-	@DeleteMapping("/delete/{mobno}")
-	public ResponseEntity<ResponceStructure<String>> delete(@PathVariable long mobno) {
-		return customerservice.deleteByMobno(mobno);
-	}
+    @PostMapping("/addToCart")
+    public ResponseEntity<ResponceStructure<String>> addToCart(
+            @RequestParam long mobno,
+            @RequestParam int itemid,
+            @RequestParam int quantity){
+        return customerService.addToCart(mobno,itemid,quantity);
+    }
 
-	@PatchMapping("/addaddress/{mobno}")
-	public ResponseEntity<ResponceStructure<Customer>> addAddress(@PathVariable long mobno,
-			@RequestBody Address address) {
-		return customerservice.addAddress(mobno, address);
-	}
+    @GetMapping("/getCart")
+    public ResponseEntity<ResponceStructure<CartWithCouponsDTO>> getCart(@RequestParam long mobno){
+        return customerService.getCart(mobno);
+    }
 
-	@GetMapping("/searchitemorrestaurant")
-	public ResponseEntity<ResponceStructure<List<Restaurant>>> searchItemOrRestaurant(@RequestParam long custmob,
-			@RequestParam String searchkey) {
-		return customerservice.searchItemOrRestaurant(custmob, searchkey);
-	}
+    @PostMapping("/placeOrder")
+    public ResponseEntity<ResponceStructure<OrderNeedConsentDTO>> placeOrder(
+            @RequestParam long mobno,
+            @RequestParam String paymentType,
+            @RequestParam String addressType,
+            @RequestParam String specialRequest,
+            @RequestParam(required = false) Integer couponId){
 
-	@PostMapping("/addtocart")
-	public ResponseEntity<ResponceStructure<String>> addToCart(@RequestParam long customermobno,
-			@RequestParam int itemid, @RequestParam int quantity) {
-		return customerservice.addToCart(customermobno, itemid, quantity);
-	}
+        return customerService.placeOrder(mobno,paymentType,addressType,specialRequest,couponId);
+    }
 
-	@PostMapping("/placeorder")
-	public ResponseEntity<ResponceStructure<OrderNeedConsentDTO>> placeOrder(@RequestBody Map<String, Long> request) {
+    @PostMapping("/confirmorder")
+    public ResponseEntity<ResponceStructure<String>> confirmOrder(@RequestParam int orderid){
+        return customerService.confirmPlacingOrder(orderid);
+    }
 
-		long mobno = request.get("mobno");
-		return orderService.placeOrder(mobno);
-	}
+    @PostMapping("/cancelorder")
+    public ResponseEntity<ResponceStructure<String>> cancelOrder(@RequestParam int orderid){
+        return customerService.denyPlacingOrder(orderid);
+    }
 
-	@PostMapping("/confirmplacingorder")
-	public ResponseEntity<ResponceStructure<Order>> confirmOrder(@RequestParam int orderId) {
+    @GetMapping("/searchitemorrestaurant")
+    public ResponseEntity<ResponceStructure<List<Restaurant>>> searchItemOrRestaurant(
+            @RequestParam long mobno,
+            @RequestParam String searchkey){
 
-		return orderService.confirmOrder(orderId);
-	}
+        return customerService.searchItemOrRestaurant(mobno,searchkey);
+    }
 
-	@PostMapping("/cancelplacingorder")
-	public ResponseEntity<ResponceStructure<Order>> cancelOrder(@RequestParam int orderId) {
+    @DeleteMapping("/removeitemfromcart")
+    public ResponseEntity<ResponceStructure<String>> removeItemFromCart(
+            @RequestParam long customermobno,
+            @RequestParam long restmob,
+            @RequestParam int itemid){
 
-		return orderService.cancelOrder(orderId);
-	}
+        return customerService.removeItemFromCart(customermobno,restmob,itemid);
+    }
 }

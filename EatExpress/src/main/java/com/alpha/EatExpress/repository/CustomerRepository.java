@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.alpha.EatExpress.entity.Customer;
 @Repository
-public interface CustomerRepo extends JpaRepository<Customer,Integer> {
+public interface CustomerRepository extends JpaRepository<Customer,Integer> {
 	 Optional<Customer> findByMobno(long mobno);
 
 	     void deleteByMobno(long mobno);
