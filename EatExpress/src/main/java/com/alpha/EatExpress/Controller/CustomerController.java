@@ -10,9 +10,10 @@ import com.alpha.EatExpress.DTO.CartWithCouponsDTO;
 import com.alpha.EatExpress.DTO.CustomerDTO;
 import com.alpha.EatExpress.DTO.OrderNeedConsentDTO;
 import com.alpha.EatExpress.entity.Customer;
+import com.alpha.EatExpress.entity.Order;
 import com.alpha.EatExpress.entity.Restaurant;
 import com.alpha.EatExpress.ResponceStructure.ResponceStructure;
-import com.alpha.EatExpress.Servicee.CustomerService;
+import com.alpha.EatExpress.Service.CustomerService;
 
 @RestController
 @RequestMapping("/customer")
@@ -65,9 +66,13 @@ public class CustomerController {
         return customerService.confirmPlacingOrder(orderid);
     }
 
-    @PostMapping("/cancelorder")
-    public ResponseEntity<ResponceStructure<String>> cancelOrder(@RequestParam int orderid){
-        return customerService.denyPlacingOrder(orderid);
+  
+    @PutMapping("/cancelOrder")
+    public ResponseEntity<ResponceStructure<Order>> cancelOrder(
+            @RequestParam Long phone,
+            @RequestParam Long orderId){
+
+        return customerService.cancelOrder(phone, orderId);
     }
 
     @GetMapping("/searchitemorrestaurant")

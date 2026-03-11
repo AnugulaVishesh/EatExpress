@@ -79,6 +79,11 @@ public String toString() {
 			+ "]";
 }
 
+public String getMethod() {
+	// TODO Auto-generated method stub
+	return null;
+}
+
 
 
 

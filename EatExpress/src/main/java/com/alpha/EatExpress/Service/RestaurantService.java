@@ -1,4 +1,4 @@
-package com.alpha.EatExpress.Servicee;
+package com.alpha.EatExpress.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +75,7 @@ public class RestaurantService {
     public ResponseEntity<ResponceStructure<Restaurant>> findRestaurant(long mobno){
 
         Restaurant restaurant = restaurantRepo.findByMobno(mobno)
-                .orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found"));
+                .orElseThrow(() -> new RestaurantNotFoundException());
 
         ResponceStructure<Restaurant> rs = new ResponceStructure<>();
         rs.setStatusCode(HttpStatus.OK.value());
@@ -90,7 +90,7 @@ public class RestaurantService {
     public ResponseEntity<ResponceStructure<String>> deleteRestaurant(long mobno){
 
         Restaurant restaurant = restaurantRepo.findByMobno(mobno)
-                .orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found"));
+                .orElseThrow(() -> new RestaurantNotFoundException());
 
         restaurantRepo.delete(restaurant);
 
@@ -107,7 +107,7 @@ public class RestaurantService {
     public ResponseEntity<ResponceStructure<Restaurant>> addItemToMenu(long mobno, Item item){
 
         Restaurant restaurant = restaurantRepo.findByMobno(mobno)
-                .orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found"));
+                .orElseThrow(() -> new RestaurantNotFoundException());
 
         item.setRestaurant(restaurant);
 
@@ -134,7 +134,7 @@ public class RestaurantService {
     public ResponseEntity<ResponceStructure<String>> updateStatus(long mobno,String status){
 
         Restaurant restaurant = restaurantRepo.findByMobno(mobno)
-                .orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found"));
+                .orElseThrow(() -> new RestaurantNotFoundException());
 
         restaurant.setStatus(status);
 
@@ -188,7 +188,7 @@ public class RestaurantService {
             double latitude,double longitude,Integer orderid){
 
         Order order = orderRepo.findById(orderid)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+                .orElseThrow(() -> new OrderNotFoundException());
 
         List<String> nearbyPartners =
                 redisService.findNearbyPartners(latitude,longitude,5.0);
@@ -213,7 +213,7 @@ public class RestaurantService {
 
         Restaurant restaurant = restaurantRepo.findByMobno(mobno)
                 .orElseThrow(() ->
-                        new RestaurantNotFoundException("Restaurant not found"));
+                        new RestaurantNotFoundException());
 
         List<Item> menu = restaurant.getMenuItems();
 
@@ -234,7 +234,7 @@ public class RestaurantService {
 
         Restaurant restaurant = restaurantRepo.findByMobno(mobno)
                 .orElseThrow(() ->
-                        new RestaurantNotFoundException("Restaurant not found"));
+                        new RestaurantNotFoundException());
 
         Item item = itemRepo.findById(itemid)
                 .orElseThrow(() ->
@@ -268,7 +268,7 @@ public class RestaurantService {
 
         Restaurant restaurant = restaurantRepo.findByMobno(mobno)
                 .orElseThrow(() ->
-                        new RestaurantNotFoundException("Restaurant not found"));
+                        new RestaurantNotFoundException());
 
         Item item = itemRepo.findById(itemid)
                 .orElseThrow(() ->
@@ -284,5 +284,39 @@ public class RestaurantService {
         rs.setData("Removed successfully");
 
         return new ResponseEntity<>(rs,HttpStatus.OK);
+    }
+
+
+    public ResponseEntity<ResponceStructure<Order>> cancelOrder(long restaurantMobNo, int orderId) {
+
+        Restaurant restaurant = restaurantRepo.findByMobno(restaurantMobNo).orElseThrow(() -> new RestaurantNotFoundException());
+
+        if (restaurant == null) {
+            throw new RestaurantNotFoundException();
+        }
+
+        Order order = orderRepo.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException());
+
+        
+        order.setStatus("CANCELLED");
+
+        double penalty = (order.getOrderPrice().doubleValue() / 100.0) * 10;
+
+        restaurant.setWallet(restaurant.getWallet() - penalty);
+
+        if (restaurant.getWallet() <= -1000) {
+            restaurant.setBlocked(true);
+        }
+
+        restaurantRepo.save(restaurant);
+        orderRepo.save(order);
+
+        ResponceStructure<Order> structure = new ResponceStructure<>();
+        structure.setStatusCode(200);
+        structure.setMessage("Order Cancelled Successfully");
+        structure.setData(order);
+
+        return new ResponseEntity<>(structure, HttpStatus.OK);
     }
 }

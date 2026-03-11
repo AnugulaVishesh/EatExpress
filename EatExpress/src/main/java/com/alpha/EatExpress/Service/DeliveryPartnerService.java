@@ -1,4 +1,4 @@
-package com.alpha.EatExpress.Servicee;
+package com.alpha.EatExpress.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -105,7 +105,7 @@ public class DeliveryPartnerService {
     public ResponseEntity<ResponceStructure<String>> acceptOrder(Integer orderid, Integer partnerid) {
 
         Order order = orderRepo.findById(orderid)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+                .orElseThrow(() -> new OrderNotFoundException());
 
         DeliveryPartner partner = deliveryPartnerRepo.findById(partnerid)
                 .orElseThrow(() -> new DeliveryPartnerNotFoundException("Partner not found"));

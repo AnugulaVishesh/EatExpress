@@ -23,6 +23,26 @@ public class Customer {
     private String mailid;
 
     private String gender;
+    
+    private double wallet;
+    
+    public double getWallet() {
+		return wallet;
+	}
+
+	public void setWallet(double wallet) {
+		this.wallet = wallet;
+	}
+
+	public double getPenaltyAmount() {
+		return penaltyAmount;
+	}
+
+	public void setPenaltyAmount(double penaltyAmount) {
+		this.penaltyAmount = penaltyAmount;
+	}
+
+	private double penaltyAmount;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")

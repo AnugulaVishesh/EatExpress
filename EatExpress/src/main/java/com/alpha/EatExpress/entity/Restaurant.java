@@ -31,8 +31,26 @@ public class Restaurant {
     private int packagingFee;
 
     private String type;
+    private double wallet;
+    private boolean blocked;
 
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
+    public double getWallet() {
+		return wallet;
+	}
+
+	public void setWallet(double wallet) {
+		this.wallet = wallet;
+	}
+
+	public boolean isBlocked() {
+		return blocked;
+	}
+
+	public void setBlocked(boolean blocked) {
+		this.blocked = blocked;
+	}
+
+	@OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     private List<Item> menuItems;
 
     @OneToOne(cascade = CascadeType.ALL)
