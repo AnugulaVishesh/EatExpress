@@ -1,4 +1,4 @@
-package com.alpha.EatExpress.Servicee;
+package com.alpha.EatExpress.Service;
 
 import java.time.LocalDate;
 

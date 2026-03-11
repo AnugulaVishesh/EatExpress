@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.alpha.EatExpress.entity.Coupon;
 import com.alpha.EatExpress.ResponceStructure.ResponceStructure;
-import com.alpha.EatExpress.Servicee.PlatformService;
+import com.alpha.EatExpress.Service.PlatformService;
 
 @RestController
 @RequestMapping("/platform")

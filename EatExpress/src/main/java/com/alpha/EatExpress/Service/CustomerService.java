@@ -1,4 +1,4 @@
-package com.alpha.EatExpress.Servicee;
+package com.alpha.EatExpress.Service;
 
 import java.util.List;
 
@@ -63,7 +63,7 @@ public class CustomerService {
     public ResponseEntity<ResponceStructure<Customer>> findCustomer(long mobno){
 
         Customer customer = customerRepository.findByMobno(mobno)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+                .orElseThrow(() -> new CustomerNotFoundException());
 
         ResponceStructure<Customer> rs = new ResponceStructure<>();
 
@@ -77,7 +77,7 @@ public class CustomerService {
     public ResponseEntity<ResponceStructure<String>> deleteCustomer(long mobno){
 
         Customer customer = customerRepository.findByMobno(mobno)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+                .orElseThrow(() -> new CustomerNotFoundException());
 
         customerRepository.delete(customer);
 
@@ -93,7 +93,7 @@ public class CustomerService {
     public ResponseEntity<ResponceStructure<String>> addToCart(long mobno,int itemid,int quantity){
 
         Customer customer = customerRepository.findByMobno(mobno)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+                .orElseThrow(() -> new CustomerNotFoundException());
 
         Item item = itemRepository.findById(itemid)
                 .orElseThrow(() -> new ItemNotFoundException("Item not found"));
@@ -119,7 +119,7 @@ public class CustomerService {
     public ResponseEntity<ResponceStructure<CartWithCouponsDTO>> getCart(long mobno){
 
         Customer customer = customerRepository.findByMobno(mobno)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+                .orElseThrow(() -> new CustomerNotFoundException());
 
         CartWithCouponsDTO dto = new CartWithCouponsDTO();
 
@@ -146,7 +146,7 @@ public class CustomerService {
             long mobno,String paymentType,String addressType,String specialRequest,Integer couponId){
 
         Customer customer = customerRepository.findByMobno(mobno)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+                .orElseThrow(() -> new CustomerNotFoundException());
 
         if(customer.getCart()==null || customer.getCart().isEmpty()){
             throw new CartEmptyException("Cart is empty");
@@ -176,7 +176,7 @@ public class CustomerService {
     public ResponseEntity<ResponceStructure<String>> confirmPlacingOrder(int orderid){
 
         Order order = orderRepository.findById(orderid)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+                .orElseThrow(() -> new OrderNotFoundException());
 
         order.setStatus("PLACED");
 
@@ -191,10 +191,10 @@ public class CustomerService {
         return new ResponseEntity<>(rs,HttpStatus.OK);
     }
 
-    public ResponseEntity<ResponceStructure<String>> denyPlacingOrder(int orderid){
+    public ResponseEntity<ResponceStructure<String>> cancelOrder(int orderid){
 
         Order order = orderRepository.findById(orderid)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+                .orElseThrow(() -> new OrderNotFoundException());
 
         order.setStatus("CANCELLED");
 
@@ -229,7 +229,7 @@ public class CustomerService {
     public ResponseEntity<ResponceStructure<String>> removeItemFromCart(long customermobno, long restmob, int itemid) {
 
         Customer customer = customerRepository.findByMobno(customermobno)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+                .orElseThrow(() -> new CustomerNotFoundException());
 
         if(customer.getCart() == null || customer.getCart().isEmpty()){
             throw new CartEmptyException("Cart is empty");
@@ -253,4 +253,52 @@ public class CustomerService {
 
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
+    
+    
+    public ResponseEntity<ResponceStructure<Order>> cancelOrder(long phone, Long orderId){
+
+        Customer customer = customerRepository.findByMobno(phone)
+                .orElseThrow(() -> new CustomerNotFoundException());
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException());
+
+        // Delivery partner NOT assigned
+        if(order.getDeliveryPartner() == null){
+
+            order.setStatus("CANCELLED");
+
+            // ONLINE payment → refund
+            if(order.getPayment().getMethod().equalsIgnoreCase("ONLINE")){
+
+                double refund = order.getOrderPrice().doubleValue();
+
+                customer.setWallet(customer.getWallet() + refund);
+            }
+
+        }
+        else{
+
+            double penalty = order.getOrderPrice().doubleValue();
+
+            customer.setPenaltyAmount(customer.getPenaltyAmount() + penalty);
+
+            order.setStatus("CANCELLED");
+        }
+
+        customerRepository.save(customer);
+        orderRepository.save(order);
+
+        ResponceStructure<Order> rs = new ResponceStructure<>();
+
+        rs.setStatusCode(HttpStatus.OK.value());
+        rs.setMessage("Order Cancelled Successfully");
+        rs.setData(order);
+
+        return new ResponseEntity<>(rs,HttpStatus.OK);
+    }
+    
+    
+    
+    
 }

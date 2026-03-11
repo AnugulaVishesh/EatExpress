@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alpha.EatExpress.DTO.DelivaryPartnerDTO;
 import com.alpha.EatExpress.ResponceStructure.ResponceStructure;
-import com.alpha.EatExpress.Servicee.DeliveryPartnerService;
+import com.alpha.EatExpress.Service.DeliveryPartnerService;
 import com.alpha.EatExpress.entity.DeliveryPartner;
 
 import jakarta.servlet.http.HttpServletResponse;

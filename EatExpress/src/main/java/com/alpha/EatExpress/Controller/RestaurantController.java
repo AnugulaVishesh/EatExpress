@@ -8,9 +8,10 @@ import org.springframework.web.bind.annotation.*;
 
 import com.alpha.EatExpress.DTO.RestaurantDTO;
 import com.alpha.EatExpress.entity.Item;
+import com.alpha.EatExpress.entity.Order;
 import com.alpha.EatExpress.entity.Restaurant;
 import com.alpha.EatExpress.ResponceStructure.ResponceStructure;
-import com.alpha.EatExpress.Servicee.RestaurantService;
+import com.alpha.EatExpress.Service.RestaurantService;
 
 @RestController
 @RequestMapping("/restaurant")
@@ -89,4 +90,15 @@ public class RestaurantController {
             @RequestParam int itemid){
         return restaurantService.removeItemFromMenu(mobno,itemid);
     }
+    
+    @PutMapping("/cancelOrder")
+    public ResponseEntity<ResponceStructure<Order>> cancelOrder(
+            @RequestParam long restaurantMobNo,
+            @RequestParam int orderId) {
+
+        return restaurantService.cancelOrder(restaurantMobNo, orderId);
+    }
+    
+    
+    
 }
