@@ -42,7 +42,7 @@ public class PlatformService {
     public ResponseEntity<ResponceStructure<String>> deleteCoupon(Integer couponId){
 
         Coupon coupon = couponRepo.findById(couponId)
-                .orElseThrow(() -> new CouponNotFoundException("Coupon not found"));
+                .orElseThrow(() -> new CouponNotFoundException());
 
         if(couponRedemptionRepo.existsByCoupon(coupon)){
             throw new CouponInvalidException(
@@ -65,7 +65,7 @@ public class PlatformService {
             String expiryDate){
 
         Coupon coupon = couponRepo.findById(couponId)
-                .orElseThrow(() -> new CouponNotFoundException("Coupon not found"));
+                .orElseThrow(() -> new CouponNotFoundException());
 
         boolean used = couponRedemptionRepo.existsByCoupon(coupon);
 
@@ -91,7 +91,7 @@ public class PlatformService {
     public ResponseEntity<ResponceStructure<Coupon>> findCoupon(Integer couponId){
 
         Coupon coupon = couponRepo.findById(couponId)
-                .orElseThrow(() -> new CouponNotFoundException("Coupon not found"));
+                .orElseThrow(() -> new CouponNotFoundException());
 
         ResponceStructure<Coupon> rs = new ResponceStructure<>();
         rs.setStatusCode(HttpStatus.OK.value());

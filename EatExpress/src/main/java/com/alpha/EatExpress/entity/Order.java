@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.*;
-
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -47,10 +46,16 @@ public class Order {
     private BigDecimal tax;
 
     private BigDecimal platformFees;
+    
+    private BigDecimal discountamount;
+    
+    private BigDecimal finalAmount;
+    
+    private BigDecimal coupon;
 
     @ManyToOne
     @JoinColumn(name = "delivery_partner_id")
-    private DeliveryPartner deliveryPartner;
+    private DeliveryPartner deliverypartner;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
@@ -146,13 +151,45 @@ public class Order {
 
     public void setPlatformFees(BigDecimal platformFees) { this.platformFees = platformFees; }
 
-    public DeliveryPartner getDeliveryPartner() { return deliveryPartner; }
+    public DeliveryPartner getDeliveryPartner() { return deliverypartner; }
 
     public void setDeliveryPartner(DeliveryPartner deliveryPartner) {
-        this.deliveryPartner = deliveryPartner;
+        this.deliverypartner = deliveryPartner;
     }
 
-    public Customer getCustomer() { return customer; }
+    public BigDecimal getDiscountamount() {
+		return discountamount;
+	}
+
+	public void setDiscountamount(BigDecimal discountamount) {
+		this.discountamount = discountamount;
+	}
+
+	public BigDecimal getFinalAmount() {
+		return finalAmount;
+	}
+
+	public void setFinalAmount(BigDecimal finalAmount) {
+		this.finalAmount = finalAmount;
+	}
+
+	public BigDecimal getCoupon() {
+		return coupon;
+	}
+
+	public void setCoupon(BigDecimal coupon) {
+		this.coupon = coupon;
+	}
+
+	public DeliveryPartner getDeliverypartner() {
+		return deliverypartner;
+	}
+
+	public void setDeliverypartner(DeliveryPartner deliverypartner) {
+		this.deliverypartner = deliverypartner;
+	}
+
+	public Customer getCustomer() { return customer; }
 
     public void setCustomer(Customer customer) { this.customer = customer; }
 
