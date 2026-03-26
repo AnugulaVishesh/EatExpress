@@ -12,6 +12,9 @@ import com.alpha.EatExpress.DTO.OrderNeedConsentDTO;
 import com.alpha.EatExpress.entity.Customer;
 import com.alpha.EatExpress.entity.Order;
 import com.alpha.EatExpress.entity.Restaurant;
+
+import jakarta.validation.Valid;
+
 import com.alpha.EatExpress.ResponceStructure.ResponceStructure;
 import com.alpha.EatExpress.Service.CustomerService;
 
@@ -123,4 +126,21 @@ public class CustomerController {
                 restmob,
                 itemid);
     }
+    
+    
+    
+    
+    @PostMapping("/registercustomer")
+    public void regCust(@RequestBody @Valid CustomerDTO cddto) {
+    	customerService.regCutToValidateData(cddto);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

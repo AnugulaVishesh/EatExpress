@@ -390,4 +390,9 @@ public class CustomerService {
 
         return new ResponseEntity<>(rs,HttpStatus.OK);
     }
+
+	public void regCutToValidateData(CustomerDTO cddto) {
+		System.out.println(cddto );
+		System.out.println("DATA IS VALID");
+	}
 }

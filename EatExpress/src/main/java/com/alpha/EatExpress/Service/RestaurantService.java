@@ -319,4 +319,11 @@ public class RestaurantService {
 
         return new ResponseEntity<>(structure, HttpStatus.OK);
     }
+    
+    public void registerRestaurant(RestaurantDTO rdto) {
+
+        System.out.println(rdto);
+        System.out.println("RESTAURANT DATA IS VALID");
+
+    }
 }

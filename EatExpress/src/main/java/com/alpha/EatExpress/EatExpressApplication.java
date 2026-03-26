@@ -12,27 +12,27 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @SpringBootApplication
 public class EatExpressApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(EatExpressApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(EatExpressApplication.class, args);
+	}
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
+	}
 
-    @Bean
-    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory connectionFactory) {
+	@Bean
+	public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory connectionFactory) {
 
-        RedisTemplate<String, String> template = new RedisTemplate<>();
+		RedisTemplate<String, String> template = new RedisTemplate<>();
 
-        template.setConnectionFactory(connectionFactory);
+		template.setConnectionFactory(connectionFactory);
 
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new StringRedisSerializer());
+		template.setKeySerializer(new StringRedisSerializer());
+		template.setValueSerializer(new StringRedisSerializer());
 
-        template.afterPropertiesSet();
+		template.afterPropertiesSet();
 
-        return template;
-    }
+		return template;
+	}
 }

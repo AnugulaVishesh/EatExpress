@@ -18,6 +18,7 @@ import com.alpha.EatExpress.Service.DeliveryPartnerService;
 import com.alpha.EatExpress.entity.DeliveryPartner;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/deliveryPartner")
@@ -28,7 +29,8 @@ public class DelivaryPartnerController {
 
     @PostMapping("/register")
     public ResponseEntity<ResponceStructure<DeliveryPartner>> register(
-            @RequestBody DelivaryPartnerDTO ddto){
+            @RequestBody @Valid DelivaryPartnerDTO ddto){
+
         return deliveryPartnerService.register(ddto);
     }
 
@@ -79,4 +81,7 @@ public class DelivaryPartnerController {
 
         deliveryPartnerService.getDirectionToCustomer(restlat, restlon, custlat, custlong, response);
     }
+    
+    
+    
 }

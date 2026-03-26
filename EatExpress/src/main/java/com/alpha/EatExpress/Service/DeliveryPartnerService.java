@@ -184,4 +184,12 @@ public class DeliveryPartnerService {
 
         response.sendRedirect(url);
     }
+    
+    
+    public void registerDeliveryPartner(DelivaryPartnerDTO ddto) {
+
+        System.out.println(ddto);
+        System.out.println("DELIVERY PARTNER DATA IS VALID");
+
+    }
 }

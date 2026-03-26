@@ -29,7 +29,7 @@ public class DeliveryPartner {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @OneToMany(mappedBy = "deliveryPartner", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Order> orders;
 
     public DeliveryPartner() {

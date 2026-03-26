@@ -10,6 +10,9 @@ import com.alpha.EatExpress.DTO.RestaurantDTO;
 import com.alpha.EatExpress.entity.Item;
 import com.alpha.EatExpress.entity.Order;
 import com.alpha.EatExpress.entity.Restaurant;
+
+import jakarta.validation.Valid;
+
 import com.alpha.EatExpress.ResponceStructure.ResponceStructure;
 import com.alpha.EatExpress.Service.RestaurantService;
 
@@ -97,6 +100,13 @@ public class RestaurantController {
             @RequestParam int orderId) {
 
         return restaurantService.cancelOrder(restaurantMobNo, orderId);
+    }
+    
+    @PostMapping("/x")
+    public void registerRestaurant(@RequestBody @Valid RestaurantDTO restaurantDTO) {
+
+        restaurantService.registerRestaurant(restaurantDTO);
+
     }
     
     
