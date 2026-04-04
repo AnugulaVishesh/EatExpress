@@ -4,15 +4,14 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import com.alpha.EatExpress.DTO.AcceptOrderDTO;
 import com.alpha.EatExpress.DTO.DelivaryPartnerDTO;
+import com.alpha.EatExpress.DTO.DirectionToCustomerDTO;
+import com.alpha.EatExpress.DTO.DirectionToRestaurantDTO;
+import com.alpha.EatExpress.DTO.FindPartnerDTO;
+import com.alpha.EatExpress.DTO.UpdateLocationDTO;
 import com.alpha.EatExpress.ResponceStructure.ResponceStructure;
 import com.alpha.EatExpress.Service.DeliveryPartnerService;
 import com.alpha.EatExpress.entity.DeliveryPartner;
@@ -27,61 +26,75 @@ public class DelivaryPartnerController {
     @Autowired
     private DeliveryPartnerService deliveryPartnerService;
 
+    // Register Delivery Partner
     @PostMapping("/register")
     public ResponseEntity<ResponceStructure<DeliveryPartner>> register(
-            @RequestBody @Valid DelivaryPartnerDTO ddto){
+            @RequestBody @Valid DelivaryPartnerDTO ddto) {
 
         return deliveryPartnerService.register(ddto);
     }
 
-    @GetMapping("/find")
+    // Find Delivery Partner
+    @PostMapping("/find")
     public ResponseEntity<ResponceStructure<DeliveryPartner>> find(
-            @RequestParam long mob){
-        return deliveryPartnerService.find(mob);
+            @RequestBody FindPartnerDTO dto) {
+
+        return deliveryPartnerService.find(dto.getMob());
     }
 
+    // Delete Delivery Partner
     @DeleteMapping("/delete")
     public ResponseEntity<ResponceStructure<String>> delete(
-            @RequestParam long mob){
-        return deliveryPartnerService.delete(mob);
+            @RequestBody FindPartnerDTO dto) {
+
+        return deliveryPartnerService.delete(dto.getMob());
     }
 
+    // Update Location
     @PostMapping("/updatelocation")
     public ResponseEntity<ResponceStructure<String>> updateLocation(
-            @RequestParam Integer partnerid,
-            @RequestParam double latitude,
-            @RequestParam double longitude){
-        return deliveryPartnerService.updateDeliveryPartnerLocation(partnerid, latitude, longitude);
+            @RequestBody UpdateLocationDTO dto) {
+
+        return deliveryPartnerService.updateDeliveryPartnerLocation(
+                dto.getPartnerid(),
+                dto.getLatitude(),
+                dto.getLongitude());
     }
 
+    // Accept Order
     @PostMapping("/acceptOrder")
     public ResponseEntity<ResponceStructure<String>> acceptOrder(
-            @RequestParam Integer orderid,
-            @RequestParam Integer partnerid){
-        return deliveryPartnerService.acceptOrder(orderid, partnerid);
+            @RequestBody AcceptOrderDTO dto) {
+
+        return deliveryPartnerService.acceptOrder(
+                dto.getOrderid(),
+                dto.getPartnerid());
     }
 
-    @GetMapping("/getDirectionToRestaurant")
+    // Direction to Restaurant
+    @PostMapping("/getDirectionToRestaurant")
     public void getDirectionToRestaurant(
-            @RequestParam Integer partnerId,
-            @RequestParam double restlat,
-            @RequestParam double restlong,
+            @RequestBody DirectionToRestaurantDTO dto,
             HttpServletResponse response) throws IOException {
 
-        deliveryPartnerService.getDirectionToRestaurant(partnerId, restlat, restlong, response);
+        deliveryPartnerService.getDirectionToRestaurant(
+                dto.getPartnerId(),
+                dto.getRestlat(),
+                dto.getRestlong(),
+                response);
     }
 
-    @GetMapping("/getDirectionToCustomer")
+    // Direction to Customer
+    @PostMapping("/getDirectionToCustomer")
     public void getDirectionToCustomer(
-            @RequestParam double restlat,
-            @RequestParam double restlon,
-            @RequestParam double custlat,
-            @RequestParam double custlong,
+            @RequestBody DirectionToCustomerDTO dto,
             HttpServletResponse response) throws IOException {
 
-        deliveryPartnerService.getDirectionToCustomer(restlat, restlon, custlat, custlong, response);
+        deliveryPartnerService.getDirectionToCustomer(
+                dto.getRestlat(),
+                dto.getRestlon(),
+                dto.getCustlat(),
+                dto.getCustlong(),
+                response);
     }
-    
-    
-    
 }

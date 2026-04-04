@@ -1,4 +1,4 @@
-package com.alpha.EatExpress.Controller;
+ package com.alpha.EatExpress.Controller;
 
 import java.util.List;
 
@@ -22,125 +22,92 @@ import com.alpha.EatExpress.Service.CustomerService;
 @RequestMapping("/customer")
 public class CustomerController {
 
-    @Autowired
-    private CustomerService customerService;
+	@Autowired
+	private CustomerService customerService;
 
-    // Register Customer
-    @PostMapping("/register")
-    public ResponseEntity<ResponceStructure<Customer>> register(
-            @RequestBody CustomerDTO cdto){
+	// Register Customer
+	@PostMapping("/register")
+	public ResponseEntity<ResponceStructure<Customer>> register(@RequestBody @Valid CustomerDTO cdto) {
 
-        return customerService.register(cdto);
-    }
+		return customerService.register(cdto);
+	}
 
-    // Find Customer
-    @GetMapping("/find")
-    public ResponseEntity<ResponceStructure<Customer>> find(
-            @RequestParam long mobno){
+	// Find Customer
+	@GetMapping("/find")
+	public ResponseEntity<ResponceStructure<Customer>> find(@RequestParam long mobno) {
 
-        return customerService.findCustomer(mobno);
-    }
+		return customerService.findCustomer(mobno);
+	}
 
-    // Delete Customer
-    @DeleteMapping("/delete")
-    public ResponseEntity<ResponceStructure<String>> delete(
-            @RequestParam long mobno){
+	// Delete Customer
+	@DeleteMapping("/delete")
+	public ResponseEntity<ResponceStructure<String>> delete(@RequestParam long mobno) {
 
-        return customerService.deleteCustomer(mobno);
-    }
+		return customerService.deleteCustomer(mobno);
+	}
 
-    // Add Item To Cart
-    @PostMapping("/addToCart")
-    public ResponseEntity<ResponceStructure<String>> addToCart(
-            @RequestParam long mobno,
-            @RequestParam int itemid,
-            @RequestParam int quantity){
+	// Add Item To Cart
+	@PostMapping("/addToCart")
+	public ResponseEntity<ResponceStructure<String>> addToCart(@RequestParam long mobno, @RequestParam int itemid,
+			@RequestParam int quantity) {
 
-        return customerService.addToCart(mobno,itemid,quantity);
-    }
+		return customerService.addToCart(mobno, itemid, quantity);
+	}
 
-    // Get Cart
-    @GetMapping("/getCart")
-    public ResponseEntity<ResponceStructure<CartWithCouponsDTO>> getCart(
-            @RequestParam long mobno){
+	// Get Cart
+	@GetMapping("/getCart")
+	public ResponseEntity<ResponceStructure<CartWithCouponsDTO>> getCart(@RequestParam long mobno) {
 
-        return customerService.getCart(mobno);
-    }
+		return customerService.getCart(mobno);
+	}
 
-    // Place Order
-    @PostMapping("/placeOrder")
-    public ResponseEntity<ResponceStructure<OrderNeedConsentDTO>> placeOrder(
+	// Place Order
+	@PostMapping("/placeOrder")
+	public ResponseEntity<ResponceStructure<OrderNeedConsentDTO>> placeOrder(
 
-            @RequestParam long mobno,
-            @RequestParam String paymentType,
-            @RequestParam String addressType,
-            @RequestParam String specialRequest,
-            @RequestParam(required = false) Integer couponId){
+			@RequestParam long mobno, @RequestParam String paymentType, @RequestParam String addressType,
+			@RequestParam String specialRequest, @RequestParam(required = false) Integer couponId) {
 
-        return customerService.placeOrder(
-                mobno,
-                paymentType,
-                addressType,
-                specialRequest,
-                couponId);
-    }
+		return customerService.placeOrder(mobno, paymentType, addressType, specialRequest, couponId);
+	}
 
-    // Confirm Order (COD)
-    @PostMapping("/confirmPlacingorderByCod")
-    public ResponseEntity<ResponceStructure<String>> confirmOrder(
-            @RequestParam int orderid){
+	// Confirm Order (COD)
+	@PostMapping("/confirmPlacingorderByCod")
+	public ResponseEntity<ResponceStructure<String>> confirmOrder(@RequestParam int orderid) {
 
-        return customerService.confirmPlacingOrderByCod(orderid);
-    }
+		return customerService.confirmPlacingOrderByCod(orderid);
+	}
 
-    // Cancel Order
-    @PutMapping("/cancelOrder")
-    public ResponseEntity<ResponceStructure<Order>> cancelOrder(
+	// Cancel Order
+	@PutMapping("/cancelOrder")
+	public ResponseEntity<ResponceStructure<Order>> cancelOrder(
 
-            @RequestParam Long phone,
-            @RequestParam Long orderId){
+			@RequestParam Long phone, @RequestParam Long orderId) {
 
-        return customerService.cancelOrder(phone,orderId);
-    }
+		return customerService.cancelOrder(phone, orderId);
+	}
 
-    // Search Item or Restaurant
-    @GetMapping("/searchitemorrestaurant")
-    public ResponseEntity<ResponceStructure<List<Restaurant>>> searchItemOrRestaurant(
+	// Search Item or Restaurant
+	@GetMapping("/searchitemorrestaurant")
+	public ResponseEntity<ResponceStructure<List<Restaurant>>> searchItemOrRestaurant(
 
-            @RequestParam long mobno,
-            @RequestParam String searchkey){
+			@RequestParam long mobno, @RequestParam String searchkey) {
 
-        return customerService.searchItemOrRestaurant(mobno,searchkey);
-    }
+		return customerService.searchItemOrRestaurant(mobno, searchkey);
+	}
 
-    // Remove Item From Cart
-    @DeleteMapping("/removeitemfromcart")
-    public ResponseEntity<ResponceStructure<String>> removeItemFromCart(
+	// Remove Item From Cart
+	@DeleteMapping("/removeitemfromcart")
+	public ResponseEntity<ResponceStructure<String>> removeItemFromCart(
 
-            @RequestParam long customermobno,
-            @RequestParam long restmob,
-            @RequestParam int itemid){
+			@RequestParam long customermobno, @RequestParam long restmob, @RequestParam int itemid) {
 
-        return customerService.removeItemFromCart(
-                customermobno,
-                restmob,
-                itemid);
-    }
-    
-    
-    
-    
-    @PostMapping("/registercustomer")
-    public void regCust(@RequestBody @Valid CustomerDTO cddto) {
-    	customerService.regCutToValidateData(cddto);
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
+		return customerService.removeItemFromCart(customermobno, restmob, itemid);
+	}
+
+	@PostMapping("/registercustomer")
+	public void regCust(@RequestBody @Valid CustomerDTO cddto) {
+		customerService.regCutToValidateData(cddto);
+	}
+
 }

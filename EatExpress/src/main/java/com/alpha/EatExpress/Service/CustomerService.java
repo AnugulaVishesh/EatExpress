@@ -58,6 +58,14 @@ public class CustomerService {
 
     @Autowired
     private CouponRedemptionRepository couponRedemptionRepo;
+    
+    @Autowired
+    private EmailService emailService;
+    
+    @Autowired
+    private OrderRepository orderRepository;
+    
+    
 
     // Register Customer
     public ResponseEntity<ResponceStructure<Customer>> register(CustomerDTO dto){
@@ -70,6 +78,22 @@ public class CustomerService {
         customer.setGender(dto.getGender());
 
         Customer savedCustomer = customerRepo.save(customer);
+        
+        // 📧 1. Send mail to Customer
+        emailService.sendMail(
+                dto.getMailid(),
+                "Registration Successful",
+                "Hello " + dto.getName() + ", your registration is successful in EatExpress."
+        );
+
+        // 📧 2. Send mail to Admin (YOU)
+        emailService.sendMail(
+                "yourgmail@gmail.com",
+                "New Customer Registered",
+                "Customer Name: " + dto.getName() +
+                "\nEmail: " + dto.getMailid() +
+                "\nMobile: " + dto.getMobno()
+        );
 
         ResponceStructure<Customer> rs = new ResponceStructure<>();
         rs.setStatusCode(HttpStatus.CREATED.value());
@@ -193,23 +217,42 @@ public class CustomerService {
             String paymentType,
             String addressType,
             String specialRequest,
-            Integer couponId){
+            Integer couponId) {
 
+        // 1. Get Customer
         Customer customer = customerRepo.findByMobno(mobno)
                 .orElseThrow(() -> new CustomerNotFoundException());
 
-        if(customer.getCart()==null || customer.getCart().isEmpty()){
+        // 2. Check Cart
+        if (customer.getCart() == null || customer.getCart().isEmpty()) {
             throw new CartEmptyException("Cart is empty");
         }
 
+        // 3. Get Restaurant from first cart item
         Restaurant restaurant = customer.getCart().get(0).getItem().getRestaurant();
 
-        double itemCost = 0;
+        // ✅ IMPORTANT NULL CHECK (FIXED ERROR)
+        if (restaurant == null) {
+            throw new RuntimeException("Restaurant not found for this order. Please check item mapping.");
+        }
 
-        for(CartItem ci : customer.getCart()){
+        // 4. Calculate Item Cost
+        double itemCost = 0;
+        for (CartItem ci : customer.getCart()) {
+
+            // Safety check
+            if (ci.getItem() == null) {
+                throw new RuntimeException("Item missing in cart");
+            }
+
+            if (ci.getItem().getRestaurant() == null) {
+                throw new RuntimeException("Item is not linked to any restaurant");
+            }
+
             itemCost += ci.getItem().getPrice() * ci.getQuantity();
         }
 
+        // 5. Charges Calculation
         double packagingFees = restaurant.getPackagingFee();
         double platformFees = 5;
         double tax = itemCost * 0.05;
@@ -222,8 +265,7 @@ public class CustomerService {
         );
 
         double deliveryCharges = 0;
-
-        if(distance > 2){
+        if (distance > 2) {
             deliveryCharges = (distance - 2) * 10;
         }
 
@@ -231,39 +273,41 @@ public class CustomerService {
 
         double discount = 0;
 
-        if(couponId != null){
+        // 6. Coupon Logic
+        if (couponId != null) {
 
             Coupon coupon = couponRepo.findById(couponId)
                     .orElseThrow(() -> new CouponNotFoundException());
 
-            if(LocalDate.now().isAfter(coupon.getExpiryDate())){
+            if (LocalDate.now().isAfter(coupon.getExpiryDate())) {
                 throw new CouponExpiredException("Coupon expired");
             }
 
-            if(totalCost < coupon.getMinOrderPrice()){
+            if (totalCost < coupon.getMinOrderPrice()) {
                 throw new CouponInvalidException("Minimum order price not satisfied");
             }
 
-            if(coupon.getMaxCoupons() <= 0){
+            if (coupon.getMaxCoupons() <= 0) {
                 throw new CouponLimitExceededException("Coupon limit reached");
             }
 
             Optional<CouponRedemption> redemption =
-                    couponRedemptionRepo.findByCouponAndCustomer(coupon,customer);
+                    couponRedemptionRepo.findByCouponAndCustomer(coupon, customer);
 
-            if(redemption.isPresent()){
+            if (redemption.isPresent()) {
                 throw new CouponInvalidException("Coupon already used");
             }
 
             discount = totalCost * coupon.getOffer() / 100;
 
-            if(discount > coupon.getMaxRedeemPrice()){
+            if (discount > coupon.getMaxRedeemPrice()) {
                 discount = coupon.getMaxRedeemPrice();
             }
 
             totalCost = totalCost - discount;
         }
 
+        // 7. Create Order
         Order order = new Order();
 
         order.setCustomer(customer);
@@ -275,8 +319,10 @@ public class CustomerService {
         order.setDiscountamount(BigDecimal.valueOf(discount));
         order.setFinalAmount(BigDecimal.valueOf(totalCost));
 
+        // 8. Save Order
         Order savedOrder = orderRepo.save(order);
 
+        // 9. Response DTO
         OrderNeedConsentDTO dto = new OrderNeedConsentDTO();
 
         dto.setOrderId(savedOrder.getId());
@@ -289,30 +335,56 @@ public class CustomerService {
         dto.setDistance(distance);
         dto.setTotalCost(totalCost);
 
+        // 10. Response Structure
         ResponceStructure<OrderNeedConsentDTO> rs = new ResponceStructure<>();
         rs.setStatusCode(HttpStatus.CREATED.value());
         rs.setMessage("Order created - waiting for customer consent");
         rs.setData(dto);
 
-        return new ResponseEntity<>(rs,HttpStatus.CREATED);
+        return new ResponseEntity<>(rs, HttpStatus.CREATED);
     }
+    public ResponseEntity<ResponceStructure<String>> confirmPlacingOrderByCod(int orderid) {
 
-    // Confirm Order
-    public ResponseEntity<ResponceStructure<String>> confirmPlacingOrderByCod(int orderid){
+    	Order order = orderRepository.findById(orderid)
+    	        .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        Order order = orderRepo.findById(orderid)
-                .orElseThrow(() -> new OrderNotFoundException());
+    	Order savedOrder = orderRepository.save(order);
 
-        order.setStatus("PLACED");
+        // ================== 📧 EMAIL LOGIC ==================
 
-        orderRepo.save(order);
+        String customerName = savedOrder.getCustomer().getName();
+        String customerEmail = savedOrder.getCustomer().getMailid();
 
-        ResponceStructure<String> rs = new ResponceStructure<>();
-        rs.setStatusCode(HttpStatus.OK.value());
-        rs.setMessage("Order Confirmed Successfully");
-        rs.setData("Order placed successfully");
+        // Convert items list
+        String items = savedOrder.getItems()
+                .stream()
+                .map(item -> item.getName())
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("No items");
 
-        return new ResponseEntity<>(rs,HttpStatus.OK);
+        String subject = "Order Confirmed - EatExpress";
+
+        String body = "Hello " + customerName + ",\n\n"
+                + "Your order has been CONFIRMED ✅\n\n"
+                + "Order ID: " + savedOrder.getId() + "\n"
+                + "Restaurant: " + savedOrder.getRestaurant().getName() + "\n"
+                + "Items: " + items + "\n"
+                + "Delivery Address: " + savedOrder.getDeliveryAddress() + "\n"
+                + "Final Amount: ₹" + savedOrder.getFinalAmount() + "\n\n"
+                + "Estimated Time: " + savedOrder.getEstimatedTime() + "\n\n"
+                + "Thank you for ordering with EatExpress!";
+
+        // 🔥 Send Mail
+        emailService.sendMail(customerEmail, subject, body);
+
+        // ================== END EMAIL ==================
+
+        ResponceStructure<String> response = new ResponceStructure<>();
+        response.setStatusCode(200);
+        response.setMessage("Order confirmed successfully");
+        response.setData("Email sent to customer");
+
+        return ResponseEntity.ok(response);
     }
 
     // Cancel Order

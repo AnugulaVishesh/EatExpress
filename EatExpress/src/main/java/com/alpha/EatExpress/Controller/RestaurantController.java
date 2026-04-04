@@ -15,7 +15,7 @@ import jakarta.validation.Valid;
 
 import com.alpha.EatExpress.ResponceStructure.ResponceStructure;
 import com.alpha.EatExpress.Service.RestaurantService;
-
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/restaurant")
 public class RestaurantController {
@@ -24,7 +24,7 @@ public class RestaurantController {
     private RestaurantService restaurantService;
 
     @PostMapping("/register")
-    public ResponseEntity<ResponceStructure<Restaurant>> register(@RequestBody RestaurantDTO rdto){
+    public ResponseEntity<ResponceStructure<Restaurant>> register(@RequestBody @Valid RestaurantDTO rdto){
         return restaurantService.register(rdto);
     }
 
