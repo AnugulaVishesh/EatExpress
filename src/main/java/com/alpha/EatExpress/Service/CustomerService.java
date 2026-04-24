@@ -24,6 +24,7 @@ import com.alpha.EatExpress.Exception.CustomerNotFoundException;
 import com.alpha.EatExpress.Exception.ItemNotFoundException;
 import com.alpha.EatExpress.Exception.OrderNotFoundException;
 import com.alpha.EatExpress.ResponceStructure.ResponceStructure;
+import com.alpha.EatExpress.entity.Address;
 import com.alpha.EatExpress.entity.CartItem;
 import com.alpha.EatExpress.entity.Coupon;
 import com.alpha.EatExpress.entity.CouponRedemption;
@@ -76,6 +77,7 @@ public class CustomerService {
         customer.setMobno(dto.getMobno());
         customer.setMailid(dto.getMailid());
         customer.setGender(dto.getGender());
+        customer.setAddress(createAddress(dto));
 
         Customer savedCustomer = customerRepo.save(customer);
         
@@ -467,4 +469,29 @@ public class CustomerService {
 		System.out.println(cddto );
 		System.out.println("DATA IS VALID");
 	}
+
+    private Address createAddress(CustomerDTO dto) {
+        Address address = new Address();
+
+        if (dto.getCoordinates() != null) {
+            address.setLatitude(dto.getCoordinates().getLatitude());
+            address.setLongitude(dto.getCoordinates().getLongitude());
+        } else {
+            address.setLatitude(17.3850);
+            address.setLongitude(78.4867);
+        }
+
+        address.setCity(defaultText(dto.getCity(), "Hyderabad"));
+        address.setArea(defaultText(dto.getArea(), "Local Area"));
+        address.setStreet(defaultText(dto.getStreet(), "Main Road"));
+        address.setState("Telangana");
+        address.setCountry("India");
+        address.setPincode(dto.getPincode() == null ? 500001 : dto.getPincode());
+
+        return address;
+    }
+
+    private String defaultText(String value, String fallback) {
+        return value == null || value.isBlank() ? fallback : value;
+    }
 }

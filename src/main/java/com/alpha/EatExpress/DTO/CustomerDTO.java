@@ -23,6 +23,12 @@ public class CustomerDTO {
     @NotBlank(message = "Gender cannot be empty")
     private String gender;
 
+    private LocationCoordinates coordinates;
+    private String city;
+    private String area;
+    private String street;
+    private Integer pincode;
+
     public CustomerDTO() {}
 
     public CustomerDTO(String name, Long mobno, String mailid, String gender) {
@@ -48,6 +54,26 @@ public class CustomerDTO {
         return gender;
     }
 
+    public LocationCoordinates getCoordinates() {
+        return coordinates;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public Integer getPincode() {
+        return pincode;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -62,6 +88,26 @@ public class CustomerDTO {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public void setCoordinates(LocationCoordinates coordinates) {
+        this.coordinates = coordinates;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public void setPincode(Integer pincode) {
+        this.pincode = pincode;
     }
 
     @Override

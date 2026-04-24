@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EatExpress</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Food delivery operations</p>
+      <h1>EatExpress</h1>
+    </div>
+    <div class="status-pill" id="apiStatus">Checking API</div>
+  </header>
+
+  <main class="shell">
+    <nav class="tabs" aria-label="Application sections">
+      <button class="tab active" data-tab="customer">Customer</button>
+      <button class="tab" data-tab="restaurant">Restaurant</button>
+      <button class="tab" data-tab="delivery">Delivery</button>
+      <button class="tab" data-tab="platform">Platform</button>
+    </nav>
+
+    <section class="workspace">
+      <aside class="panel activity">
+        <div class="panel-head">
+          <h2>Activity</h2>
+          <button class="icon-btn" id="clearLog" title="Clear activity">Clear</button>
+        </div>
+        <pre id="output">Ready.</pre>
+      </aside>
+
+      <section class="view active" id="customer">
+        <div class="grid two">
+          <form class="panel api-form" data-endpoint="/customer/register" data-method="POST" data-json="true">
+            <h2>Register Customer</h2>
+            <label>Name<input name="name" required value="Aarav Customer"></label>
+            <label>Mobile<input name="mobno" type="number" required value="9000000001"></label>
+            <label>Email<input name="mailid" type="email" required value="customer@example.com"></label>
+            <label>Gender<input name="gender" required value="Male"></label>
+            <div class="inline">
+              <label>Latitude<input name="coordinates.latitude" type="number" step="0.000001" value="17.385044"></label>
+              <label>Longitude<input name="coordinates.longitude" type="number" step="0.000001" value="78.486671"></label>
+            </div>
+            <div class="inline">
+              <label>City<input name="city" value="Hyderabad"></label>
+              <label>Pincode<input name="pincode" type="number" value="500001"></label>
+            </div>
+            <label>Area<input name="area" value="Abids"></label>
+            <button type="submit">Register</button>
+          </form>
+
+          <form class="panel api-form" data-endpoint="/customer/find" data-method="GET">
+            <h2>Find Customer</h2>
+            <label>Mobile<input name="mobno" type="number" required value="9000000001"></label>
+            <button type="submit">Find</button>
+          </form>
+
+          <form class="panel api-form" data-endpoint="/customer/addToCart" data-method="POST">
+            <h2>Add To Cart</h2>
+            <label>Customer Mobile<input name="mobno" type="number" required value="9000000001"></label>
+            <label>Item ID<input name="itemid" type="number" required></label>
+            <label>Quantity<input name="quantity" type="number" min="1" value="1"></label>
+            <button type="submit">Add Item</button>
+          </form>
+
+          <form class="panel api-form" data-endpoint="/customer/getCart" data-method="GET">
+            <h2>Cart</h2>
+            <label>Customer Mobile<input name="mobno" type="number" required value="9000000001"></label>
+            <button type="submit">Load Cart</button>
+          </form>
+
+          <form class="panel api-form wide" data-endpoint="/customer/placeOrder" data-method="POST">
+            <h2>Place Order</h2>
+            <div class="inline">
+              <label>Customer Mobile<input name="mobno" type="number" required value="9000000001"></label>
+              <label>Coupon ID<input name="couponId" type="number"></label>
+            </div>
+            <div class="inline">
+              <label>Payment Type<input name="paymentType" value="COD"></label>
+              <label>Address Type<input name="addressType" value="HOME"></label>
+            </div>
+            <label>Special Request<input name="specialRequest" value="Please deliver warm"></label>
+            <button type="submit">Create Order</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="view" id="restaurant">
+        <div class="grid two">
+          <form class="panel api-form" data-endpoint="/restaurant/register" data-method="POST" data-json="true">
+            <h2>Register Restaurant</h2>
+            <label>Name<input name="name" required value="Spice Route"></label>
+            <label>Mobile<input name="mobno" type="number" required value="9000001001"></label>
+            <label>Email<input name="mail" type="email" required value="restaurant@example.com"></label>
+            <label>Description<input name="description" value="Fast Indian meals"></label>
+            <div class="inline">
+              <label>Latitude<input name="coordinates.latitude" type="number" step="0.000001" value="17.391"></label>
+              <label>Longitude<input name="coordinates.longitude" type="number" step="0.000001" value="78.477"></label>
+            </div>
+            <div class="inline">
+              <label>Packaging Fee<input name="packagingFee" type="number" value="15"></label>
+              <label>Type<input name="type" value="Indian"></label>
+            </div>
+            <button type="submit">Register</button>
+          </form>
+
+          <form class="panel api-form" data-endpoint="/restaurant/additemtomenu" data-method="POST" data-query-fields="mobno" data-json="true">
+            <h2>Add Menu Item</h2>
+            <label>Restaurant Mobile<input name="mobno" type="number" required value="9000001001"></label>
+            <label>Item Name<input name="name" required value="Paneer Bowl"></label>
+            <label>Description<input name="description" value="Paneer, rice, salad"></label>
+            <div class="inline">
+              <label>Price<input name="price" type="number" value="220"></label>
+              <label>Unit<input name="unit" type="number" value="1"></label>
+            </div>
+            <div class="inline">
+              <label>Type<input name="type" value="Veg"></label>
+              <label>Availability<input name="availability" value="AVAILABLE"></label>
+            </div>
+            <label>Image URL<input name="image" value="https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=900"></label>
+            <button type="submit">Add Item</button>
+          </form>
+
+          <form class="panel api-form" data-endpoint="/restaurant/getMenu" data-method="GET">
+            <h2>Menu</h2>
+            <label>Restaurant Mobile<input name="mobno" type="number" value="9000001001"></label>
+            <button type="submit">Load Menu</button>
+          </form>
+
+          <form class="panel api-form" data-endpoint="/restaurant/updatestatus" data-method="PATCH">
+            <h2>Restaurant Status</h2>
+            <label>Restaurant Mobile<input name="mobno" type="number" value="9000001001"></label>
+            <select name="status">
+              <option>OPEN</option>
+              <option>CLOSED</option>
+            </select>
+            <button type="submit">Update</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="view" id="delivery">
+        <div class="grid two">
+          <form class="panel api-form" data-endpoint="/deliveryPartner/register" data-method="POST" data-json="true">
+            <h2>Register Partner</h2>
+            <label>Name<input name="name" value="Ravi Rider"></label>
+            <label>Mobile<input name="mob" type="number" value="9000002001"></label>
+            <label>Email<input name="mail" type="email" value="rider@example.com"></label>
+            <label>Vehicle Number<input name="vechileno" value="TS09AB1234"></label>
+            <button type="submit">Register</button>
+          </form>
+
+          <form class="panel api-form" data-endpoint="/deliveryPartner/updatelocation" data-method="POST" data-json="true">
+            <h2>Update Location</h2>
+            <label>Partner ID<input name="partnerid" type="number"></label>
+            <div class="inline">
+              <label>Latitude<input name="latitude" type="number" step="0.000001" value="17.386"></label>
+              <label>Longitude<input name="longitude" type="number" step="0.000001" value="78.48"></label>
+            </div>
+            <button type="submit">Update</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="view" id="platform">
+        <div class="grid two">
+          <form class="panel api-form" data-endpoint="/platform/createcoupon" data-method="POST" data-json="true">
+            <h2>Create Coupon</h2>
+            <label>Name<input name="name" value="WELCOME20"></label>
+            <div class="inline">
+              <label>Type<input name="type" value="PERCENT"></label>
+              <label>Status<input name="status" value="ACTIVE"></label>
+            </div>
+            <div class="inline">
+              <label>Offer %<input name="offer" type="number" value="20"></label>
+              <label>Min Order<input name="minOrderPrice" type="number" value="100"></label>
+            </div>
+            <div class="inline">
+              <label>Max Redeem<input name="maxRedeemPrice" type="number" value="80"></label>
+              <label>Max Coupons<input name="maxCoupons" type="number" value="100"></label>
+            </div>
+            <label>Expiry Date<input name="expiryDate" type="date" value="2026-12-31"></label>
+            <button type="submit">Create</button>
+          </form>
+
+          <form class="panel api-form" data-endpoint="/platform/findcoupon" data-method="GET">
+            <h2>Find Coupon</h2>
+            <label>Coupon ID<input name="couponId" type="number"></label>
+            <button type="submit">Find</button>
+          </form>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
